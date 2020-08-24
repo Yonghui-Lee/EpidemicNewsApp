@@ -1,0 +1,2 @@
+# EpidemicNewsApp
+EpidemicNewsApp on Android
