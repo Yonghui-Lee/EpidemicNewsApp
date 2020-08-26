@@ -56,6 +56,7 @@ public abstract class RecyclerOnScrollerListener extends RecyclerView.OnScrollLi
         return false;
     }
 
+    
     //抽象方法，用来传递加载更多事件
     public abstract void onLoadMore(int currentPage);
 
