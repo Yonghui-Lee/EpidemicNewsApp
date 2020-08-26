@@ -3,23 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_news">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.java.liyonghui.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/navigation_news"
+        android:name="com.java.liyonghui.ui.news.NewsFragment"
+        android:label="@string/title_news"
+        tools:layout="@layout/fragment_news" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.java.liyonghui.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_wiki"
+        android:name="com.java.liyonghui.ui.wiki.WikiFragment"
+        android:label="@string/title_wiki"
+        tools:layout="@layout/fragment_wiki" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.java.liyonghui.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_data"
+        android:name="com.java.liyonghui.ui.data.DataFragment"
+        android:label="@string/title_data"
+        tools:layout="@layout/fragment_data" />
+
+    <fragment
+        android:id="@+id/navigation_scholar"
+        android:name="com.java.liyonghui.ui.scholar.ScholarFragment"
+        android:label="@string/title_scholar"
+        tools:layout="@layout/fragment_scholar" />
 </navigation>

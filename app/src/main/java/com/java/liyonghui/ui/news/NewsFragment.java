@@ -1,4 +1,4 @@
-package com.java.liyonghui.ui.dashboard;
+package com.java.liyonghui.ui.news;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,17 +14,17 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.java.liyonghui.R;
 
-public class DashboardFragment extends Fragment {
+public class NewsFragment extends Fragment {
 
-    private DashboardViewModel dashboardViewModel;
+    private NewsViewModel newsViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        dashboardViewModel =
-                ViewModelProviders.of(this).get(DashboardViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
-        final TextView textView = root.findViewById(R.id.text_dashboard);
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        newsViewModel =
+                ViewModelProviders.of(this).get(NewsViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_news, container, false);
+        final TextView textView = root.findViewById(R.id.text_news);
+        newsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);

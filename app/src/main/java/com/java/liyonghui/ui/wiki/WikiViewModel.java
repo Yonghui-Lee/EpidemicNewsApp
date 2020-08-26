@@ -1,16 +1,16 @@
-package com.java.liyonghui.ui.notifications;
+package com.java.liyonghui.ui.wiki;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class NotificationsViewModel extends ViewModel {
+public class WikiViewModel extends ViewModel {
 
     private MutableLiveData<String> mText;
 
-    public NotificationsViewModel() {
+    public WikiViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is notifications fragment");
+        mText.setValue("This is wiki fragment");
     }
 
     public LiveData<String> getText() {

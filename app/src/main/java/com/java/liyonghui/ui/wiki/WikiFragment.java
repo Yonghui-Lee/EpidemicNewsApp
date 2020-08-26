@@ -1,4 +1,4 @@
-package com.java.liyonghui.ui.notifications;
+package com.java.liyonghui.ui.wiki;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,17 +14,17 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.java.liyonghui.R;
 
-public class NotificationsFragment extends Fragment {
+public class WikiFragment extends Fragment {
 
-    private NotificationsViewModel notificationsViewModel;
+    private WikiViewModel wikiViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        notificationsViewModel =
-                ViewModelProviders.of(this).get(NotificationsViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_notifications, container, false);
-        final TextView textView = root.findViewById(R.id.text_notifications);
-        notificationsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        wikiViewModel =
+                ViewModelProviders.of(this).get(WikiViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_wiki, container, false);
+        final TextView textView = root.findViewById(R.id.text_wiki);
+        wikiViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);
