@@ -3,6 +3,7 @@ package com.java.liyonghui.ui.news;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,17 +66,17 @@ public class NewsFragment extends Fragment{
             @Override
             public void onLoadMore(int currentPage) {
                 mCurrentPage = currentPage;
-                new Handler().post(new Runnable() {
+                new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        loadMoreTest();
+                        new Handler(Looper.getMainLooper()).post(new Runnable(){
+                            @Override
+                            public void run() {
+                                loadMoreTest();
+                            }
+                        });
                     }
-                });
+                }).start();
             }
         });
         return root;
