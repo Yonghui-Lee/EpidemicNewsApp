@@ -27,9 +27,19 @@ import com.java.liyonghui.News;
 import com.java.liyonghui.R;
 import com.java.liyonghui.RecyclerOnScrollerListener;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 
 public class NewsFragment extends Fragment{
     private List<News> mNewsList;
@@ -41,7 +51,7 @@ public class NewsFragment extends Fragment{
                              ViewGroup container, Bundle savedInstanceState) {
         newsViewModel =
                 ViewModelProviders.of(this).get(NewsViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_news, container, false);
+        final View root = inflater.inflate(R.layout.fragment_news, container, false);
 
 
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_refresh_widget);
@@ -57,30 +67,75 @@ public class NewsFragment extends Fragment{
                 }, 3000);
             }
         });
-        RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.news_title_view);
+        final RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.news_title_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new NewsAdapter(getNews());
-        recyclerView.setAdapter(adapter);
-        adapter.setOnLoadMoreListener(new NewsAdapter.OnLoadMoreListener() {
+
+        new Thread(new Runnable() {
             @Override
-            public void onLoadMore(int currentPage) {
-                mCurrentPage = currentPage;
-                new Thread(new Runnable() {
+            public void run() {
+                adapter = new NewsAdapter(initLoad());
+                new Handler(Looper.getMainLooper()).post(new Runnable(){
                     @Override
                     public void run() {
-                        new Handler(Looper.getMainLooper()).post(new Runnable(){
+                        recyclerView.setAdapter(adapter);
+                        adapter.setOnLoadMoreListener(new NewsAdapter.OnLoadMoreListener() {
                             @Override
-                            public void run() {
-                                loadMoreTest();
+                            public void onLoadMore(int currentPage) {
+                                mCurrentPage = currentPage;
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        new Handler(Looper.getMainLooper()).post(new Runnable(){
+                                            @Override
+                                            public void run() {
+                                                loadMoreTest();
+                                            }
+                                        });
+                                    }
+                                }).start();
                             }
                         });
                     }
-                }).start();
+                });
             }
-        });
+        }).start();
+
         return root;
     }
+    private List<News> initLoad(){
+        List<News> newsList = new ArrayList<>();
+        try{
+            OkHttpClient client= new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url("https://covid-dashboard.aminer.cn/api/dist/events.json")
+                    .build();
+            Response response = client.newCall(request).execute();
+            String responseData = response.body().string();
+            JSONObject outerJSON = new JSONObject(responseData);
+            JSONArray jsonArray = outerJSON.getJSONArray("datas");
+            for(int i = 0; i < 10; i++){
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String id = jsonObject.getString("_id");
+                String title = jsonObject.getString("title");
+                String time = jsonObject.getString("time");
+                News news = new News();
+                news.setTitle(title);
+                newsList.add(news);
+                Log.d("this","id is "+id);
+                Log.d("this","time is "+time);
+                Log.d("this","title is "+title);
+            }
+
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        mNewsList = newsList;
+        return newsList;
+
+    }
+
+
     private void loadMoreTest() {
         List<News> newsList = new ArrayList<>();
         for (int i = 1; i <= 4; i++) {

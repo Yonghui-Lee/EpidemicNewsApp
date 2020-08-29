@@ -1,8 +1,15 @@
 package com.java.liyonghui;
 
-public class News {
+import com.orm.SugarRecord;
+import com.orm.dsl.Unique;
+
+public class News extends SugarRecord {
+    @Unique
+    private String newsID;
     private String title;
     private String content;
+    private String geoName;
+    private String time;
     public  String getTitle(){
         return title;
     }
