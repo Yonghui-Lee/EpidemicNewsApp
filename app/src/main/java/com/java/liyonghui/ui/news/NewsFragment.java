@@ -121,6 +121,7 @@ public class NewsFragment extends Fragment{
                 String time = jsonObject.getString("time");
                 News news = new News();
                 news.setTitle(title);
+                news.setTime(time);
                 newsList.add(news);
                 Log.d("this","id is "+id);
                 Log.d("this","time is "+time);
@@ -198,10 +199,12 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView newsTitleText;
-
+        TextView newsTimeText;
         public ViewHolder(View view) {
             super(view);
             newsTitleText = (TextView) view.findViewById(R.id.news_title);
+            newsTimeText = (TextView) view.findViewById(R.id.news_time);
+
         }
 
     }
@@ -246,6 +249,7 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
             //这里必须强制转换
             //如果外层的判断条件改为if(holder instance ContentViewHolder)，这里输入holder后会自动转换
             holder.newsTitleText.setText(news.getTitle());
+            holder.newsTimeText.setText(news.getTime());
         } else {
             Log.d("mytest", "isCanLoadMore: " + isCanLoadMore);
             if (isCanLoadMore) {
@@ -274,7 +278,7 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     //ContentView，水果们
     class ContentViewHolder extends ViewHolder {
         TextView news_title = itemView.findViewById(R.id.news_title);
-
+        TextView news_time = itemView.findViewById(R.id.news_time);
         public ContentViewHolder(View itemView) {
             super(itemView);
         }
