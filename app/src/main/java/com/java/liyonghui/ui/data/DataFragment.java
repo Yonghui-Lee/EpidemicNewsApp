@@ -32,4 +32,5 @@ public class DataFragment extends Fragment {
         });
         return root;
     }
+
 }

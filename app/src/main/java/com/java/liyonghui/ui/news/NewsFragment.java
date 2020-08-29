@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -52,7 +54,7 @@ public class NewsFragment extends Fragment{
         newsViewModel =
                 ViewModelProviders.of(this).get(NewsViewModel.class);
         final View root = inflater.inflate(R.layout.fragment_news, container, false);
-
+        setHasOptionsMenu(true);
 
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_refresh_widget);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -177,7 +179,11 @@ public class NewsFragment extends Fragment{
         return builder.toString();
     }
 
-
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.actionbar_menu, menu);
+    }
 
 }
 

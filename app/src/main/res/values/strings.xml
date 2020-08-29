@@ -4,4 +4,6 @@
     <string name="title_wiki">图谱</string>
     <string name="title_data">数据</string>
     <string name="title_scholar">学者</string>
+    <string name="action_search">搜索</string>
+    <string name="action_history">历史</string>
 </resources>

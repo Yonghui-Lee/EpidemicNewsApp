@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.java.liyonghui.R;
+import com.java.liyonghui.ui.news.NewsFragment;
 
 public class ScholarFragment extends Fragment {
 
@@ -32,4 +33,5 @@ public class ScholarFragment extends Fragment {
         });
         return root;
     }
+
 }
