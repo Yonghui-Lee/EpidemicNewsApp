@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.actionbartest.MainActivity" >
 
-    <item
-        android:id="@+id/action_search"
-        android:icon="@drawable/baseline_search_black_18dp"
+    <item android:id="@+id/search"
         android:title="@string/action_search"
-        app:showAsAction="always" />
+        android:icon="@drawable/baseline_search_black_18dp"
+        app:showAsAction="collapseActionView|ifRoom"
+        app:actionViewClass="android.widget.SearchView" />
     <item
         android:id="@+id/action_delete"
         android:icon="@drawable/baseline_schedule_black_18dp"
