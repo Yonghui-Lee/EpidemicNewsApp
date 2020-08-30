@@ -1,5 +1,6 @@
 package com.java.liyonghui.ui.news;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.tabs.TabLayout;
 import com.java.liyonghui.News;
 import com.java.liyonghui.R;
 import com.java.liyonghui.RecyclerOnScrollerListener;
@@ -102,6 +104,15 @@ public class NewsFragment extends Fragment{
                 });
             }
         }).start();
+
+
+        TabLayout mTabLayout = root.findViewById(R.id.tabLayout);
+        // 添加 tab item
+        mTabLayout.addTab(mTabLayout.newTab().setText("TAB1"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("TAB2"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("TAB3"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("TAB4"));
+
 
         return root;
     }
