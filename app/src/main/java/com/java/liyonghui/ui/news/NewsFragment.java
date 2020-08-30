@@ -16,6 +16,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -113,6 +114,38 @@ public class NewsFragment extends Fragment{
         mTabLayout.addTab(mTabLayout.newTab().setText("TAB3"));
         mTabLayout.addTab(mTabLayout.newTab().setText("TAB4"));
 
+        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+                if (tab.getText().equals("TAB1")) {
+                    Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab1",Toast.LENGTH_SHORT    );
+                    toast.show();
+                }
+                if (tab.getText().equals("TAB2")) {
+                    Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab2",Toast.LENGTH_SHORT    );
+                    toast.show();
+                }
+                if (tab.getText().equals("TAB3")) {
+                    Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab3",Toast.LENGTH_SHORT    );
+                    toast.show();
+                }
+                if (tab.getText().equals("TAB4")) {
+                    Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab4",Toast.LENGTH_SHORT    );
+                    toast.show();
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
         return root;
     }
