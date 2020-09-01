@@ -1,6 +1,5 @@
 package com.java.liyonghui.ui.news;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,9 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -49,6 +47,7 @@ import okhttp3.Response;
 public class NewsFragment extends Fragment{
     private List<News> mNewsList;
     private int mCurrentPage = 1;
+    private static final int PER_PAGE = 10;
     private NewsAdapter adapter;
     private NewsViewModel newsViewModel;
 
@@ -75,7 +74,7 @@ public class NewsFragment extends Fragment{
         final RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.news_title_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-
+        mNewsList = new ArrayList<>();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -84,23 +83,24 @@ public class NewsFragment extends Fragment{
                     @Override
                     public void run() {
                         recyclerView.setAdapter(adapter);
-                        adapter.setOnLoadMoreListener(new NewsAdapter.OnLoadMoreListener() {
+                    }
+                });
+                adapter.setOnLoadMoreListener(new NewsAdapter.OnLoadMoreListener() {
+                    @Override
+                    public void onLoadMore(int currentPage) {
+                        mCurrentPage = currentPage;
+                        new Thread(new Runnable() {
                             @Override
-                            public void onLoadMore(int currentPage) {
-                                mCurrentPage = currentPage;
-                                new Thread(new Runnable() {
+                            public void run() {
+                                initLoad();
+                                new Handler(Looper.getMainLooper()).post(new Runnable(){
                                     @Override
                                     public void run() {
-                                        new Handler(Looper.getMainLooper()).post(new Runnable(){
-                                            @Override
-                                            public void run() {
-                                                loadMoreTest();
-                                            }
-                                        });
+                                        adapter.setData(mNewsList);
                                     }
-                                }).start();
+                                });
                             }
-                        });
+                        }).start();
                     }
                 });
             }
@@ -153,14 +153,18 @@ public class NewsFragment extends Fragment{
         List<News> newsList = new ArrayList<>();
         try{
             OkHttpClient client= new OkHttpClient();
-            Request request = new Request.Builder()
-                    .url("https://covid-dashboard.aminer.cn/api/dist/events.json")
-                    .build();
+            Request.Builder reqBuild = new Request.Builder();
+            HttpUrl.Builder urlBuilder =HttpUrl.parse("https://covid-dashboard.aminer.cn/api/events/list")
+                    .newBuilder();
+            urlBuilder.addQueryParameter("page", String.valueOf(mCurrentPage));
+            urlBuilder.addQueryParameter("size", String.valueOf(PER_PAGE));
+            reqBuild.url(urlBuilder.build());
+            Request request = reqBuild.build();
             Response response = client.newCall(request).execute();
             String responseData = response.body().string();
             JSONObject outerJSON = new JSONObject(responseData);
-            JSONArray jsonArray = outerJSON.getJSONArray("datas");
-            for(int i = 0; i < 10; i++){
+            JSONArray jsonArray = outerJSON.getJSONArray("data");
+            for(int i = 0; i < jsonArray.length(); i++){
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String id = jsonObject.getString("_id");
                 String title = jsonObject.getString("title");
@@ -169,19 +173,23 @@ public class NewsFragment extends Fragment{
                 news.setTitle(title);
                 news.setTime(time);
                 newsList.add(news);
-                Log.d("this","id is "+id);
-                Log.d("this","time is "+time);
-                Log.d("this","title is "+title);
             }
 
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
-        mNewsList = newsList;
-        return newsList;
 
+        mNewsList.addAll(newsList);
+        if(adapter!=null){
+            if (mNewsList.size() == mCurrentPage * PER_PAGE) {
+                adapter.setCanLoadMore(true);
+            } else {
+                adapter.setCanLoadMore(false);
+            }
+        }
+
+        return mNewsList;
     }
-
 
     private void loadMoreTest() {
         List<News> newsList = new ArrayList<>();
