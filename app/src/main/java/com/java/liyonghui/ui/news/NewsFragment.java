@@ -139,9 +139,31 @@ public class NewsFragment extends Fragment{
 
                 adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
                     @Override
-                    public void onClick(int position) {
-                        News news = mNewsList.get(position);
-                        NewsContentActivity.actionStart(getActivity(),news.getTitle(),news.getContent());
+                    public void onClick(final int position) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try{
+                                    News news = mNewsList.get(position);
+                                    OkHttpClient client= new OkHttpClient();
+                                    Request.Builder reqBuild = new Request.Builder();
+                                    HttpUrl.Builder urlBuilder =HttpUrl.parse("https://covid-dashboard-api.aminer.cn/event/"+news.getNewsID())
+                                            .newBuilder();
+                                    reqBuild.url(urlBuilder.build());
+                                    Request request = reqBuild.build();
+                                    Response response = client.newCall(request).execute();
+                                    String responseData = response.body().string();
+                                    JSONObject outerJSON = new JSONObject(responseData);
+                                    JSONObject innerJSON = (JSONObject)outerJSON.get("data");
+                                    String content = innerJSON.getString("content");
+                                    Log.d("text",request.toString());
+                                    Log.d("text",responseData);
+                                    NewsContentActivity.actionStart(getActivity(),news.getTitle(),content);
+                                } catch (IOException | JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
                     }
                 });
 
@@ -176,6 +198,7 @@ public class NewsFragment extends Fragment{
                     .newBuilder();
             urlBuilder.addQueryParameter("page", String.valueOf(mCurrentPage));
             urlBuilder.addQueryParameter("size", String.valueOf(PER_PAGE));
+            urlBuilder.addQueryParameter("type", "all");
             reqBuild.url(urlBuilder.build());
             Request request = reqBuild.build();
             Response response = client.newCall(request).execute();
@@ -190,7 +213,7 @@ public class NewsFragment extends Fragment{
                 News news = new News();
                 news.setTitle(title);
                 news.setTime(time);
-                news.setContent(id);//to change
+                news.setNewsID(id);
                 newsList.add(news);
             }
 

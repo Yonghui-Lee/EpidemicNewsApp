@@ -10,6 +10,12 @@ public class News extends SugarRecord {
     private String content;
     private String geoName;
     private String time;
+    public  String getNewsID(){
+        return newsID;
+    }
+    public  void setNewsID(String newsID){
+        this.newsID = newsID;
+    }
     public  String getTime(){
         return time;
     }
