@@ -25,7 +25,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.tabs.TabLayout;
+import com.java.liyonghui.MainActivity;
 import com.java.liyonghui.News;
+import com.java.liyonghui.NewsContentActivity;
 import com.java.liyonghui.R;
 import com.java.liyonghui.RecyclerOnScrollerListener;
 
@@ -85,6 +87,15 @@ public class NewsFragment extends Fragment{
                         recyclerView.setAdapter(adapter);
                     }
                 });
+
+                adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
+                    @Override
+                    public void onClick(int position) {
+                        News news = mNewsList.get(position);
+                        NewsContentActivity.actionStart(getActivity(),news.getTitle(),news.getContent());
+                    }
+                });
+
                 adapter.setOnLoadMoreListener(new NewsAdapter.OnLoadMoreListener() {
                     @Override
                     public void onLoadMore(int currentPage) {
@@ -109,29 +120,34 @@ public class NewsFragment extends Fragment{
 
         TabLayout mTabLayout = root.findViewById(R.id.tabLayout);
         // 添加 tab item
-        mTabLayout.addTab(mTabLayout.newTab().setText("TAB1"));
-        mTabLayout.addTab(mTabLayout.newTab().setText("TAB2"));
-        mTabLayout.addTab(mTabLayout.newTab().setText("TAB3"));
-        mTabLayout.addTab(mTabLayout.newTab().setText("TAB4"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("All"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("Event"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("Points"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("News"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("Paper"));
 
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
 
-                if (tab.getText().equals("TAB1")) {
+                if (tab.getText().equals("All")) {
                     Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab1",Toast.LENGTH_SHORT    );
                     toast.show();
                 }
-                if (tab.getText().equals("TAB2")) {
+                if (tab.getText().equals("Event")) {
                     Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab2",Toast.LENGTH_SHORT    );
                     toast.show();
                 }
-                if (tab.getText().equals("TAB3")) {
+                if (tab.getText().equals("Points")) {
                     Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab3",Toast.LENGTH_SHORT    );
                     toast.show();
                 }
-                if (tab.getText().equals("TAB4")) {
+                if (tab.getText().equals("News")) {
                     Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab4",Toast.LENGTH_SHORT    );
+                    toast.show();
+                }
+                if (tab.getText().equals("Paper")) {
+                    Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab5",Toast.LENGTH_SHORT    );
                     toast.show();
                 }
             }
@@ -172,6 +188,7 @@ public class NewsFragment extends Fragment{
                 News news = new News();
                 news.setTitle(title);
                 news.setTime(time);
+                news.setContent(id);//to change
                 newsList.add(news);
             }
 
@@ -189,46 +206,6 @@ public class NewsFragment extends Fragment{
         }
 
         return mNewsList;
-    }
-
-    private void loadMoreTest() {
-        List<News> newsList = new ArrayList<>();
-        for (int i = 1; i <= 4; i++) {
-            News news = new News();
-            news.setTitle("This is news title " + i);
-            news.setContent(getRandomLengthContent("This is news content " + i + ". "));
-            newsList.add(news);
-        }
-        mNewsList.addAll(newsList);
-//        if (mNewsList.size() == mCurrentPage * PER_PAGE) {
-//            adapter.setCanLoadMore(true);
-//        } else {
-//            adapter.setCanLoadMore(false);
-//        }
-        adapter.setCanLoadMore(true);
-        adapter.setData(mNewsList);
-    }
-
-    private List<News> getNews() {
-        List<News> newsList = new ArrayList<>();
-        for (int i = 1; i <= 50; i++) {
-            News news = new News();
-            news.setTitle("This is news title " + i);
-            news.setContent(getRandomLengthContent("This is news content " + i + ". "));
-            newsList.add(news);
-        }
-        mNewsList = newsList;
-        return newsList;
-    }
-
-    private String getRandomLengthContent(String content) {
-        Random random = new Random();
-        int length = random.nextInt(20) + 1;
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            builder.append(content);
-        }
-        return builder.toString();
     }
 
     @Override
@@ -280,6 +257,7 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
             rotateAnimation = AnimationUtils.loadAnimation(mContext, R.anim.loading);
             rotateAnimation.setInterpolator(new LinearInterpolator());
         }
+
         if (viewType == VIEW_TYPE_CONTENT) {
             return new ContentViewHolder(LayoutInflater.from(mContext).inflate(R.layout.news_item, parent, false));
         } else {
@@ -287,21 +265,10 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
             return new FooterViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_footer, parent, false));
         }
 
-
-//            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_item, parent, false);
-//            final ViewHolder holder = new ViewHolder(view);
-//            view.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    News news = mNewsList.get(holder.getAdapterPosition());
-////                    NewsContentActivity.actionStart(getActivity(), news.getTitle(), news.getContent());
-//                }
-//            });
-//            return holder;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         if (holder.getItemViewType() == VIEW_TYPE_CONTENT) {
             News news = mNewsList.get(position);
             //这里必须强制转换
@@ -316,6 +283,14 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
                 ((FooterViewHolder) holder).showTextOnly("无更多数据");
             }
         }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) {
+                    listener.onClick(position);
+                }
+            }
+        });
 
 
     }
@@ -432,6 +407,16 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
     public void setOnLoadMoreListener(OnLoadMoreListener listener) {
         this.mOnLoadMoreListener = listener;
+    }
+
+    public interface OnItemClickListener {
+        void onClick(int position);
+    }
+
+    private OnItemClickListener listener;
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 
 }

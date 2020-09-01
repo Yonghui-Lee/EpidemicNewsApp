@@ -28,6 +28,8 @@
             <meta-data android:name="QUERY_LOG" android:value="true" />
             <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.example.liyonghui" />
         </activity>
+    <activity android:name=".NewsContentActivity"
+        android:label="疫情新闻"></activity>
     </application>
 
 </manifest>
