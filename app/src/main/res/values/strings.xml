@@ -6,4 +6,5 @@
     <string name="title_scholar">学者</string>
     <string name="action_search">搜索</string>
     <string name="action_history">历史</string>
+    <string name="change_tab">+</string>
 </resources>

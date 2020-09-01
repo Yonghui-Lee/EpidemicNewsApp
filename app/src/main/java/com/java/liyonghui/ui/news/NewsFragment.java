@@ -52,6 +52,7 @@ public class NewsFragment extends Fragment{
     private static final int PER_PAGE = 10;
     private NewsAdapter adapter;
     private NewsViewModel newsViewModel;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -60,62 +61,19 @@ public class NewsFragment extends Fragment{
         final View root = inflater.inflate(R.layout.fragment_news, container, false);
         setHasOptionsMenu(true);
 
-        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_refresh_widget);
+        swipeRefreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_refresh_widget);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 //这里获取数据的逻辑
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-                }, 3000);
+                getNews();
             }
         });
         final RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.news_title_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         mNewsList = new ArrayList<>();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                adapter = new NewsAdapter(initLoad());
-                new Handler(Looper.getMainLooper()).post(new Runnable(){
-                    @Override
-                    public void run() {
-                        recyclerView.setAdapter(adapter);
-                    }
-                });
-
-                adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
-                    @Override
-                    public void onClick(int position) {
-                        News news = mNewsList.get(position);
-                        NewsContentActivity.actionStart(getActivity(),news.getTitle(),news.getContent());
-                    }
-                });
-
-                adapter.setOnLoadMoreListener(new NewsAdapter.OnLoadMoreListener() {
-                    @Override
-                    public void onLoadMore(int currentPage) {
-                        mCurrentPage = currentPage;
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                initLoad();
-                                new Handler(Looper.getMainLooper()).post(new Runnable(){
-                                    @Override
-                                    public void run() {
-                                        adapter.setData(mNewsList);
-                                    }
-                                });
-                            }
-                        }).start();
-                    }
-                });
-            }
-        }).start();
+        getNews();
 
 
         TabLayout mTabLayout = root.findViewById(R.id.tabLayout);
@@ -164,6 +122,50 @@ public class NewsFragment extends Fragment{
         });
 
         return root;
+    }
+
+    void getNews(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                adapter = new NewsAdapter(initLoad());
+                new Handler(Looper.getMainLooper()).post(new Runnable(){
+                    @Override
+                    public void run() {
+                        final RecyclerView recyclerView = (RecyclerView) swipeRefreshLayout.findViewById(R.id.news_title_view);
+                        recyclerView.setAdapter(adapter);
+                    }
+                });
+
+                adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
+                    @Override
+                    public void onClick(int position) {
+                        News news = mNewsList.get(position);
+                        NewsContentActivity.actionStart(getActivity(),news.getTitle(),news.getContent());
+                    }
+                });
+
+                adapter.setOnLoadMoreListener(new NewsAdapter.OnLoadMoreListener() {
+                    @Override
+                    public void onLoadMore(int currentPage) {
+                        mCurrentPage = currentPage;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initLoad();
+                                new Handler(Looper.getMainLooper()).post(new Runnable(){
+                                    @Override
+                                    public void run() {
+                                        adapter.setData(mNewsList);
+                                    }
+                                });
+                            }
+                        }).start();
+                    }
+                });
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        }).start();
     }
     private List<News> initLoad(){
         List<News> newsList = new ArrayList<>();
