@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.actionbartest.MainActivity" >
+
+    <item android:id="@+id/weibo"
+        android:icon="@drawable/weibo"
+        app:showAsAction="always"
+        android:title="@string/weibo_share" />
+    <item
+        android:id="@+id/weixin"
+        android:icon="@drawable/weixin"
+        android:title="@string/weixin_share"
+        app:showAsAction="always" />
+
+</menu>

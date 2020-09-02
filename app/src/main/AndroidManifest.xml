@@ -4,7 +4,7 @@
     package="com.java.liyonghui">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -28,8 +28,12 @@
             <meta-data android:name="QUERY_LOG" android:value="true" />
             <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.example.liyonghui" />
         </activity>
-    <activity android:name=".NewsContentActivity"
-        android:label="疫情新闻"></activity>
+        <activity android:name=".NewsContentActivity"
+            android:label="疫情新闻">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
-
 </manifest>

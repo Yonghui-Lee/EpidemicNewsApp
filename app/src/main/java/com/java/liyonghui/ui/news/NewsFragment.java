@@ -49,7 +49,7 @@ import okhttp3.Response;
 public class NewsFragment extends Fragment{
     private List<News> mNewsList;
     private int mCurrentPage = 1;
-    private static final int PER_PAGE = 10;
+    private static final int PER_PAGE = 30;
     private NewsAdapter adapter;
     private NewsViewModel newsViewModel;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -179,13 +179,13 @@ public class NewsFragment extends Fragment{
                                     @Override
                                     public void run() {
                                         adapter.setData(mNewsList);
+                                        swipeRefreshLayout.setRefreshing(false);
                                     }
                                 });
                             }
                         }).start();
                     }
                 });
-                swipeRefreshLayout.setRefreshing(false);
             }
         }).start();
     }
@@ -210,10 +210,13 @@ public class NewsFragment extends Fragment{
                 String id = jsonObject.getString("_id");
                 String title = jsonObject.getString("title");
                 String time = jsonObject.getString("time");
+                String content = jsonObject.getString("content");
+//                if(content.equals("")) continue;
                 News news = new News();
                 news.setTitle(title);
                 news.setTime(time);
                 news.setNewsID(id);
+                news.setContent(content);
                 newsList.add(news);
             }
 
@@ -222,13 +225,13 @@ public class NewsFragment extends Fragment{
         }
 
         mNewsList.addAll(newsList);
-        if(adapter!=null){
-            if (mNewsList.size() == mCurrentPage * PER_PAGE) {
-                adapter.setCanLoadMore(true);
-            } else {
-                adapter.setCanLoadMore(false);
-            }
-        }
+//        if(adapter!=null){
+//            if (mNewsList.size() == mCurrentPage * PER_PAGE) {
+//                adapter.setCanLoadMore(true);
+//            } else {
+//                adapter.setCanLoadMore(false);
+//            }
+//        }
 
         return mNewsList;
     }
@@ -387,11 +390,11 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 //            }
 //        };
         //初始化的时候如果未填满一页，那么肯定就没有更多数据了
-        if (mNewsList.size() < PER_PAGE) {
-            setCanLoadMore(false);
-        } else {
-            setCanLoadMore(true);
-        }
+//        if (mNewsList.size() < PER_PAGE) {
+//            setCanLoadMore(false);
+//        } else {
+//            setCanLoadMore(true);
+//        }
     }
 
 
