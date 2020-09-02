@@ -54,6 +54,7 @@ public class NewsFragment extends Fragment{
     private NewsAdapter adapter;
     private NewsViewModel newsViewModel;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private String myNewsType;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -62,6 +63,7 @@ public class NewsFragment extends Fragment{
         final View root = inflater.inflate(R.layout.fragment_news, container, false);
         setHasOptionsMenu(true);
 
+        myNewsType = "all";
         swipeRefreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_refresh_widget);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -80,8 +82,6 @@ public class NewsFragment extends Fragment{
         TabLayout mTabLayout = root.findViewById(R.id.tabLayout);
         // 添加 tab item
         mTabLayout.addTab(mTabLayout.newTab().setText("All"));
-        mTabLayout.addTab(mTabLayout.newTab().setText("Event"));
-        mTabLayout.addTab(mTabLayout.newTab().setText("Points"));
         mTabLayout.addTab(mTabLayout.newTab().setText("News"));
         mTabLayout.addTab(mTabLayout.newTab().setText("Paper"));
 
@@ -92,22 +92,23 @@ public class NewsFragment extends Fragment{
                 if (tab.getText().equals("All")) {
                     Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab1",Toast.LENGTH_SHORT    );
                     toast.show();
-                }
-                if (tab.getText().equals("Event")) {
-                    Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab2",Toast.LENGTH_SHORT    );
-                    toast.show();
-                }
-                if (tab.getText().equals("Points")) {
-                    Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab3",Toast.LENGTH_SHORT    );
-                    toast.show();
+                    myNewsType = "all";
+                    mNewsList = new ArrayList<>();
+                    getNews();
                 }
                 if (tab.getText().equals("News")) {
-                    Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab4",Toast.LENGTH_SHORT    );
+                    Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab2",Toast.LENGTH_SHORT    );
                     toast.show();
+                    myNewsType = "news";
+                    mNewsList = new ArrayList<>();
+                    getNews();
                 }
                 if (tab.getText().equals("Paper")) {
-                    Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab5",Toast.LENGTH_SHORT    );
+                    Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab3",Toast.LENGTH_SHORT    );
                     toast.show();
+                    myNewsType = "paper";
+                    mNewsList = new ArrayList<>();
+                    getNews();
                 }
             }
 
@@ -135,6 +136,7 @@ public class NewsFragment extends Fragment{
                     public void run() {
                         final RecyclerView recyclerView = (RecyclerView) swipeRefreshLayout.findViewById(R.id.news_title_view);
                         recyclerView.setAdapter(adapter);
+                        swipeRefreshLayout.setRefreshing(false);
                     }
                 });
 
@@ -188,7 +190,6 @@ public class NewsFragment extends Fragment{
                                     @Override
                                     public void run() {
                                         adapter.setData(mNewsList);
-                                        swipeRefreshLayout.setRefreshing(false);
                                     }
                                 });
                             }
@@ -207,9 +208,10 @@ public class NewsFragment extends Fragment{
                     .newBuilder();
             urlBuilder.addQueryParameter("page", String.valueOf(mCurrentPage));
             urlBuilder.addQueryParameter("size", String.valueOf(PER_PAGE));
-            urlBuilder.addQueryParameter("type", "all");
+            urlBuilder.addQueryParameter("type", myNewsType);
             reqBuild.url(urlBuilder.build());
             Request request = reqBuild.build();
+            Log.d("this",request.toString());
             Response response = client.newCall(request).execute();
             String responseData = response.body().string();
             JSONObject outerJSON = new JSONObject(responseData);
