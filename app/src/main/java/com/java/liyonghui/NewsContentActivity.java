@@ -52,10 +52,11 @@ public class NewsContentActivity extends AppCompatActivity implements WbShareCal
                     + "follow_app_official_microblog," + "invitation_write";
     private IWBAPI mWBAPI;
     private String mNewsTitle;
-    private String mNewsContent;
-    public static void actionStart(Context context, String newsTitle, String newsContent) {
+    public static void actionStart(Context context, String newsTitle, String newsTime, String newsSource, String newsContent) {
         Intent intent = new Intent(context, NewsContentActivity.class);
         intent.putExtra("news_title", newsTitle);
+        intent.putExtra("news_time", newsTime);
+        intent.putExtra("news_source", newsSource);
         intent.putExtra("news_content", newsContent);
         context.startActivity(intent);
     }
@@ -66,12 +67,21 @@ public class NewsContentActivity extends AppCompatActivity implements WbShareCal
         setContentView(R.layout.news_content);
 
         String newsTitle = getIntent().getStringExtra("news_title"); // 获取传入的新闻标题
+        String newsTime = "时间：" + getIntent().getStringExtra("news_time"); // 获取传入的新闻标题
+        String newsSource = getIntent().getStringExtra("news_source"); // 获取传入的新闻内容
         String newsContent = getIntent().getStringExtra("news_content"); // 获取传入的新闻内容
+        if(newsSource.equals(""))
+            newsSource = "来源：未知";
+        else newsSource = "来源："+ newsSource;
         mNewsTitle = newsTitle;
-        mNewsContent = newsContent;
+
         TextView newsTitleText = (TextView) findViewById(R.id.news_title);
+        TextView newsTimeText = (TextView) findViewById(R.id.news_time);
+        TextView newsSourceText = (TextView) findViewById(R.id.news_source);
         TextView newsContentText = (TextView) findViewById(R.id.news_content);
         newsTitleText.setText(newsTitle); // 刷新新闻的标题
+        newsTimeText.setText(newsTime);
+        newsSourceText.setText(newsSource);
         newsContentText.setText(newsContent); // 刷新新闻的内容
 
         AuthInfo authInfo = new AuthInfo(this, APP_KY, REDIRECT_URL, SCOPE);

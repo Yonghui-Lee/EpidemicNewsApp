@@ -9,12 +9,14 @@ public class News extends SugarRecord {
     private String title;
     private String content;
     private String time;
+    private String source;
     private boolean isRead;
-    public News(String newsID, String title, String content, String time){
+    public News(String newsID, String title, String content, String time, String source){
         this.newsID = newsID;
         this.title = title;
         this.content = content;
         this.time = time;
+        this.source = source;
         this.isRead = false;
     }
     public  boolean getIsRead(){
@@ -46,5 +48,11 @@ public class News extends SugarRecord {
     }
     public void setContent(String content){
         this.content = content;
+    }
+    public String getSource(){
+        return source;
+    }
+    public void setSource(String content){
+        this.source = source;
     }
 }

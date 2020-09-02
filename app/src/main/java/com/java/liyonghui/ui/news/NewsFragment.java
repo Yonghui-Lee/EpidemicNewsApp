@@ -63,7 +63,7 @@ public class NewsFragment extends Fragment{
         final View root = inflater.inflate(R.layout.fragment_news, container, false);
         setHasOptionsMenu(true);
 
-        myNewsType = "all";
+        myNewsType = "news";
         swipeRefreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_refresh_widget);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -81,30 +81,22 @@ public class NewsFragment extends Fragment{
 
         TabLayout mTabLayout = root.findViewById(R.id.tabLayout);
         // 添加 tab item
-        mTabLayout.addTab(mTabLayout.newTab().setText("All"));
+
         mTabLayout.addTab(mTabLayout.newTab().setText("News"));
         mTabLayout.addTab(mTabLayout.newTab().setText("Paper"));
 
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-
-                if (tab.getText().equals("All")) {
-                    Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab1",Toast.LENGTH_SHORT    );
-                    toast.show();
-                    myNewsType = "all";
-                    mNewsList = new ArrayList<>();
-                    getNews();
-                }
                 if (tab.getText().equals("News")) {
-                    Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab2",Toast.LENGTH_SHORT    );
+                    Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab1",Toast.LENGTH_SHORT    );
                     toast.show();
                     myNewsType = "news";
                     mNewsList = new ArrayList<>();
                     getNews();
                 }
                 if (tab.getText().equals("Paper")) {
-                    Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab3",Toast.LENGTH_SHORT    );
+                    Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab2",Toast.LENGTH_SHORT    );
                     toast.show();
                     myNewsType = "paper";
                     mNewsList = new ArrayList<>();
@@ -171,7 +163,7 @@ public class NewsFragment extends Fragment{
                                 }
 
 
-                                NewsContentActivity.actionStart(getActivity(), news.getTitle(), news.getContent());
+                                NewsContentActivity.actionStart(getActivity(), news.getTitle(), news.getTime(), news.getSource(), news.getContent());
 
                             }
                         }).start();
@@ -222,8 +214,9 @@ public class NewsFragment extends Fragment{
                 String title = jsonObject.getString("title");
                 String time = jsonObject.getString("time");
                 String content = jsonObject.getString("content");
+                String source = jsonObject.getString("source");
 //                if(content.equals("")) continue;
-                News news = new News(id, title, content, time);
+                News news = new News(id, title, content, time, source);
                 newsList.add(news);
             }
 
