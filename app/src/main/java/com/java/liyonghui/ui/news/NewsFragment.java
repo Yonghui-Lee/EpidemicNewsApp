@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -143,25 +144,33 @@ public class NewsFragment extends Fragment{
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                try{
-                                    News news = mNewsList.get(position);
-                                    OkHttpClient client= new OkHttpClient();
-                                    Request.Builder reqBuild = new Request.Builder();
-                                    HttpUrl.Builder urlBuilder =HttpUrl.parse("https://covid-dashboard-api.aminer.cn/event/"+news.getNewsID())
-                                            .newBuilder();
-                                    reqBuild.url(urlBuilder.build());
-                                    Request request = reqBuild.build();
-                                    Response response = client.newCall(request).execute();
-                                    String responseData = response.body().string();
-                                    JSONObject outerJSON = new JSONObject(responseData);
-                                    JSONObject innerJSON = (JSONObject)outerJSON.get("data");
-                                    String content = innerJSON.getString("content");
-                                    Log.d("text",request.toString());
-                                    Log.d("text",responseData);
-                                    NewsContentActivity.actionStart(getActivity(),news.getTitle(),content);
-                                } catch (IOException | JSONException e) {
-                                    e.printStackTrace();
+                                News news = mNewsList.get(position);
+//                                    OkHttpClient client= new OkHttpClient();
+//                                    Request.Builder reqBuild = new Request.Builder();
+//                                    HttpUrl.Builder urlBuilder =HttpUrl.parse("https://covid-dashboard-api.aminer.cn/event/"+news.getNewsID())
+//                                            .newBuilder();
+//                                    reqBuild.url(urlBuilder.build());
+//                                    Request request = reqBuild.build();
+//                                    Response response = client.newCall(request).execute();
+//                                    String responseData = response.body().string();
+//                                    JSONObject outerJSON = new JSONObject(responseData);
+//                                    JSONObject innerJSON = (JSONObject)outerJSON.get("data");
+//                                    String content = innerJSON.getString("content");
+//                                    Log.d("text",request.toString());
+//                                    Log.d("text",responseData);
+                                if(!news.getIsRead()){
+                                    news.setIsRead(true);
+                                    new Handler(Looper.getMainLooper()).post(new Runnable(){
+                                        @Override
+                                        public void run() {
+                                            adapter.setGrey(position);
+                                        }
+                                    });
                                 }
+
+
+                                NewsContentActivity.actionStart(getActivity(), news.getTitle(), news.getContent());
+
                             }
                         }).start();
                     }
@@ -212,11 +221,7 @@ public class NewsFragment extends Fragment{
                 String time = jsonObject.getString("time");
                 String content = jsonObject.getString("content");
 //                if(content.equals("")) continue;
-                News news = new News();
-                news.setTitle(title);
-                news.setTime(time);
-                news.setNewsID(id);
-                news.setContent(content);
+                News news = new News(id, title, content, time);
                 newsList.add(news);
             }
 
@@ -301,8 +306,17 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
             News news = mNewsList.get(position);
             //这里必须强制转换
             //如果外层的判断条件改为if(holder instance ContentViewHolder)，这里输入holder后会自动转换
-            holder.newsTitleText.setText(news.getTitle());
-            holder.newsTimeText.setText(news.getTime());
+            String title,time;
+            if(news.getIsRead()){
+                title = "<font color = \"#dcdcdc\">" + news.getTitle() + "</font>";
+                time = "<font color = \"#dcdcdc\">" + news.getTime() + "</font>";
+            }else{
+                title = "<font color = \"#000000\">" + news.getTitle() + "</font>";
+                time = "<font color = \"#000000\">" + news.getTime() + "</font>";
+            }
+
+            holder.newsTitleText.setText(Html.fromHtml(title,Html.FROM_HTML_MODE_LEGACY));
+            holder.newsTimeText.setText(Html.fromHtml(time,Html.FROM_HTML_MODE_LEGACY));
         } else {
             Log.d("mytest", "isCanLoadMore: " + isCanLoadMore);
             if (isCanLoadMore) {
@@ -414,6 +428,11 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         mNewsList = list;
         notifyDataSetChanged();
 
+    }
+
+    public void setGrey(int index){
+        mNewsList.get(index).setIsRead(true);
+        notifyDataSetChanged();
     }
 
 

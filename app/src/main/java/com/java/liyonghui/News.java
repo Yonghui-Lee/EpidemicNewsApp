@@ -8,8 +8,21 @@ public class News extends SugarRecord {
     private String newsID;
     private String title;
     private String content;
-    private String geoName;
     private String time;
+    private boolean isRead;
+    public News(String newsID, String title, String content, String time){
+        this.newsID = newsID;
+        this.title = title;
+        this.content = content;
+        this.time = time;
+        this.isRead = false;
+    }
+    public  boolean getIsRead(){
+        return isRead;
+    }
+    public  void setIsRead(boolean isRead){
+        this.isRead = isRead;
+    }
     public  String getNewsID(){
         return newsID;
     }
