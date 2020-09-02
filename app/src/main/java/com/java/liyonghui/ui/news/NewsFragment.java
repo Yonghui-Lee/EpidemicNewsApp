@@ -9,12 +9,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,6 +57,7 @@ public class NewsFragment extends Fragment{
     private NewsViewModel newsViewModel;
     private SwipeRefreshLayout swipeRefreshLayout;
     private String myNewsType;
+    private TabLayout mTabLayout;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -79,11 +82,18 @@ public class NewsFragment extends Fragment{
         getNews();
 
 
-        TabLayout mTabLayout = root.findViewById(R.id.tabLayout);
+        mTabLayout = root.findViewById(R.id.tabLayout);
         // 添加 tab item
 
         mTabLayout.addTab(mTabLayout.newTab().setText("News"));
         mTabLayout.addTab(mTabLayout.newTab().setText("Paper"));
+        mTabLayout.addTab(mTabLayout.newTab().setText(""));
+
+        LinearLayout tabStrip = (LinearLayout) mTabLayout.getChildAt(0);
+        View tabView = tabStrip.getChildAt(2);
+        if (tabView != null) {
+            tabView.setClickable(false);
+        }
 
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -116,6 +126,42 @@ public class NewsFragment extends Fragment{
         });
 
         return root;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+//            case R.id.weibo:
+//                doWeiboShare();
+//                return true;
+            case R.id.history:
+                Toast.makeText(getActivity(), "History", Toast.LENGTH_SHORT).show();
+
+                mTabLayout.getTabAt(2).select();
+                mNewsList = News.listAll(News.class);
+                adapter = new NewsAdapter(mNewsList);
+                new Handler(Looper.getMainLooper()).post(new Runnable(){
+                    @Override
+                    public void run() {
+                        final RecyclerView recyclerView = (RecyclerView) swipeRefreshLayout.findViewById(R.id.news_title_view);
+                        recyclerView.setAdapter(adapter);
+                        adapter.setCanLoadMore(false);
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                });
+
+                adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
+                    @Override
+                    public void onClick(final int position) {
+                        News news = mNewsList.get(position);
+                        NewsContentActivity.actionStart(getActivity(), news.getTitle(), news.getTime(), news.getSource(), news.getContent());
+                    }
+                });
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     void getNews(){
@@ -154,6 +200,7 @@ public class NewsFragment extends Fragment{
 //                                    Log.d("text",responseData);
                                 if(!news.getIsRead()){
                                     news.setIsRead(true);
+                                    news.save();
                                     new Handler(Looper.getMainLooper()).post(new Runnable(){
                                         @Override
                                         public void run() {
@@ -289,7 +336,6 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         if (viewType == VIEW_TYPE_CONTENT) {
             return new ContentViewHolder(LayoutInflater.from(mContext).inflate(R.layout.news_item, parent, false));
         } else {
-
             return new FooterViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_footer, parent, false));
         }
 

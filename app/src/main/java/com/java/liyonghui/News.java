@@ -11,6 +11,9 @@ public class News extends SugarRecord {
     private String time;
     private String source;
     private boolean isRead;
+    public News(){
+
+    }
     public News(String newsID, String title, String content, String time, String source){
         this.newsID = newsID;
         this.title = title;

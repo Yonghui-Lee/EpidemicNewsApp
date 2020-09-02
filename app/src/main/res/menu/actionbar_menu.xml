@@ -10,7 +10,7 @@
         app:showAsAction="collapseActionView|ifRoom"
         app:actionViewClass="android.widget.SearchView" />
     <item
-        android:id="@+id/action_delete"
+        android:id="@+id/history"
         android:icon="@drawable/baseline_schedule_black_18dp"
         android:title="@string/action_history"
         app:showAsAction="always" />
