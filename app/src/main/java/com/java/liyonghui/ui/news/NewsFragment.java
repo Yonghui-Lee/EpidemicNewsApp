@@ -1,6 +1,7 @@
 package com.java.liyonghui.ui.news;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,6 +35,7 @@ import com.java.liyonghui.News;
 import com.java.liyonghui.NewsContentActivity;
 import com.java.liyonghui.R;
 import com.java.liyonghui.RecyclerOnScrollerListener;
+import com.java.liyonghui.channel.ChannelActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,6 +44,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import okhttp3.HttpUrl;
@@ -72,6 +76,7 @@ public class NewsFragment extends Fragment{
             @Override
             public void onRefresh() {
                 //这里获取数据的逻辑
+                mNewsList = new ArrayList<News>();
                 getNews();
             }
         });
@@ -85,12 +90,12 @@ public class NewsFragment extends Fragment{
         mTabLayout = root.findViewById(R.id.tabLayout);
         // 添加 tab item
 
-        mTabLayout.addTab(mTabLayout.newTab().setText("News"));
-        mTabLayout.addTab(mTabLayout.newTab().setText("Paper"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("news"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("paper"));
         mTabLayout.addTab(mTabLayout.newTab().setText(""));
 
         LinearLayout tabStrip = (LinearLayout) mTabLayout.getChildAt(0);
-        View tabView = tabStrip.getChildAt(2);
+        View tabView = tabStrip.getChildAt(mTabLayout.getTabCount()-1);
         if (tabView != null) {
             tabView.setClickable(false);
         }
@@ -98,16 +103,12 @@ public class NewsFragment extends Fragment{
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                if (tab.getText().equals("News")) {
-                    Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab1",Toast.LENGTH_SHORT    );
-                    toast.show();
+                if (tab.getText().equals("news")) {
                     myNewsType = "news";
                     mNewsList = new ArrayList<>();
                     getNews();
                 }
-                if (tab.getText().equals("Paper")) {
-                    Toast toast=Toast.makeText(getActivity(),"Toast提示消息:Tab2",Toast.LENGTH_SHORT    );
-                    toast.show();
+                if (tab.getText().equals("paper")) {
                     myNewsType = "paper";
                     mNewsList = new ArrayList<>();
                     getNews();
@@ -125,19 +126,70 @@ public class NewsFragment extends Fragment{
             }
         });
 
+        Button btn = (Button) root.findViewById(R.id.btn);
+        btn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Intent intent = new Intent(getActivity(), ChannelActivity.class);
+                int num = mTabLayout.getTabCount()-1;
+                boolean newsSelected = false;
+                boolean paperSelected = false;
+                for(int i=0; i<num; i++){
+                    if(Objects.equals(Objects.requireNonNull(mTabLayout.getTabAt(i)).getText(), "news"))
+                        newsSelected = true;
+                    if(Objects.equals(Objects.requireNonNull(mTabLayout.getTabAt(i)).getText(), "paper"))
+                        paperSelected = true;
+                }
+                intent.putExtra("news",newsSelected);
+                intent.putExtra("paper",paperSelected);
+                startActivityForResult(intent,1);
+            }
+        });
+
         return root;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        switch (requestCode){
+            case 1:
+                boolean newsSelected = data.getBooleanExtra("news",true);
+                boolean paperSelected = data.getBooleanExtra("paper",true);
+                if(newsSelected || paperSelected)
+                {
+                    mTabLayout.removeAllTabs();
+                    if(newsSelected)
+                        mTabLayout.addTab(mTabLayout.newTab().setText("news"));
+                    if(paperSelected)
+                        mTabLayout.addTab(mTabLayout.newTab().setText("paper"));
+                    mTabLayout.addTab(mTabLayout.newTab().setText(""));
+                    LinearLayout tabStrip = (LinearLayout) mTabLayout.getChildAt(0);
+                    View tabView = tabStrip.getChildAt(mTabLayout.getTabCount()-1);
+                    if (tabView != null) {
+                        tabView.setClickable(false);
+                    }
+                    myNewsType = mTabLayout.getTabAt(0).getText().toString();
+                    mNewsList = new ArrayList<>();
+                    getNews();
+                }else{
+                    Toast.makeText(getActivity(), "操作失败，必须保留一个频道", Toast.LENGTH_SHORT).show();
+                }
+
+
+            default:
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-//            case R.id.weibo:
+            case R.id.search:
 //                doWeiboShare();
 //                return true;
             case R.id.history:
                 Toast.makeText(getActivity(), "History", Toast.LENGTH_SHORT).show();
 
-                mTabLayout.getTabAt(2).select();
+                Objects.requireNonNull(mTabLayout.getTabAt(mTabLayout.getTabCount() - 1)).select();
                 mNewsList = News.listAll(News.class);
                 adapter = new NewsAdapter(mNewsList);
                 new Handler(Looper.getMainLooper()).post(new Runnable(){

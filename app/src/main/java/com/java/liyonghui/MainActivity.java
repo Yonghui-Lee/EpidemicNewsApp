@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.java.liyonghui.channel.Channel;
 import com.orm.SugarContext;
 import com.orm.query.Select;
 import com.sina.weibo.sdk.auth.AuthInfo;
@@ -47,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
         SugarContext.init(this);
         News.deleteAll(News.class);
-
     }
 
     private void initSdk() {
