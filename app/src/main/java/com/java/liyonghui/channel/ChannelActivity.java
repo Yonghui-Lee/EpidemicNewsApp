@@ -49,25 +49,6 @@ public class ChannelActivity extends Activity implements AdapterView.OnItemClick
         userChannelList = new ArrayList<Channel>();
         otherChannelList = new ArrayList<Channel>();
 
-//        userChannelList.add(new Channel("推荐",true));
-//        userChannelList.add(new Channel("热点",true));
-//        userChannelList.add(new Channel("杭州",true));
-//        userChannelList.add(new Channel("时尚",true));
-//        userChannelList.add(new Channel("科技",true));
-//        userChannelList.add(new Channel("体育",true));
-//        userChannelList.add(new Channel("军事",true));
-//        otherChannelList.add(new Channel("财经",false));
-//        otherChannelList.add(new Channel("汽车",false));
-//        otherChannelList.add(new Channel("房产",false));
-//        otherChannelList.add(new Channel("社会",false));
-//        otherChannelList.add(new Channel("情感",false));
-//        otherChannelList.add(new Channel("女人",false));
-//        otherChannelList.add(new Channel("旅游",false));
-//        otherChannelList.add(new Channel("健康",false));
-//        otherChannelList.add(new Channel("美女",false));
-//        otherChannelList.add(new Channel("游戏",false));
-//        otherChannelList.add(new Channel("数码",false));
-//        otherChannelList.add(new Channel("娱乐",false));
         if(newsSelected)
             userChannelList.add(new Channel("NEWS"));
         else

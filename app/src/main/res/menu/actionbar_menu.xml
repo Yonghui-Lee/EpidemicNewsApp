@@ -6,6 +6,7 @@
 
     <item android:id="@+id/search"
         android:title="@string/action_search"
+        android:queryHint="请输入关键词"
         android:icon="@drawable/baseline_search_black_18dp"
         app:showAsAction="collapseActionView|ifRoom"
         app:actionViewClass="android.widget.SearchView" />

@@ -32,7 +32,7 @@
         </activity>
         <activity android:name=".channel.ChannelActivity"/>
 
-        <meta-data android:name="DATABASE" android:value="news.db" />
+        <meta-data android:name="DATABASE" android:value="my_news.db" />
         <meta-data android:name="VERSION" android:value="1" />
         <meta-data android:name="QUERY_LOG" android:value="true" />
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.java.liyonghui" />

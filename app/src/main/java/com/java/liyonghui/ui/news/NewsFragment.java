@@ -19,6 +19,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,12 +31,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.tabs.TabLayout;
+import com.java.liyonghui.InvertedIndex;
 import com.java.liyonghui.MainActivity;
 import com.java.liyonghui.News;
 import com.java.liyonghui.NewsContentActivity;
 import com.java.liyonghui.R;
 import com.java.liyonghui.RecyclerOnScrollerListener;
 import com.java.liyonghui.channel.ChannelActivity;
+import com.orm.query.Condition;
+import com.orm.query.Select;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,6 +47,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -190,9 +195,6 @@ public class NewsFragment extends Fragment{
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.search:
-//                doWeiboShare();
-//                return true;
             case R.id.history:
                 Objects.requireNonNull(mTabLayout.getTabAt(mTabLayout.getTabCount() - 1)).select();
                 mNewsList = News.listAll(News.class);
@@ -344,6 +346,99 @@ public class NewsFragment extends Fragment{
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
         inflater.inflate(R.menu.actionbar_menu, menu);
+        MenuItem menuItem = menu.findItem(R.id.search);
+
+        final SearchView searchView = (SearchView) menuItem.getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            //文字输入完成，提交的回调
+            @Override
+            public boolean onQueryTextSubmit(final String queryText) {
+                Toast.makeText(getActivity(), "onQueryTextSubmit = " + queryText, Toast.LENGTH_SHORT).show();
+                searchView.setIconified(true);
+                Objects.requireNonNull(mTabLayout.getTabAt(mTabLayout.getTabCount() - 1)).select();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ArrayList<News> newsList = new ArrayList<>();
+                        List<InvertedIndex> li = Select.from(InvertedIndex.class)
+                                .where(Condition.prop("myword").eq(queryText)).list();
+                        Log.d("this",String.valueOf(li.size()));
+
+                        HashSet<String> set = new HashSet<>();
+                        for(InvertedIndex in :li){
+                            String s = in.getIndex();
+                            set.add(s);
+                        }
+                        int i = 0;
+                        for (String str : set) {
+                            try{
+                                if(i++ > 15) break;
+                                OkHttpClient client= new OkHttpClient();
+                                Request.Builder reqBuild = new Request.Builder();
+                                HttpUrl.Builder urlBuilder =HttpUrl.parse("https://covid-dashboard-api.aminer.cn/event/"+str)
+                                        .newBuilder();
+                                reqBuild.url(urlBuilder.build());
+                                Request request = reqBuild.build();
+                                Response response = client.newCall(request).execute();
+                                String responseData = response.body().string();
+                                JSONObject outerJSON = new JSONObject(responseData);
+                                JSONObject innerJSON = (JSONObject)outerJSON.get("data");
+                                String id = innerJSON.getString("_id");
+                                String title = innerJSON.getString("title");
+                                String time = innerJSON.getString("time");
+                                String content = innerJSON.getString("content");
+                                String source = innerJSON.getString("source");
+                                News news = new News(id, title, content, time, source);
+                                newsList.add(news);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+
+
+                        mNewsList = newsList;
+                        adapter = new NewsAdapter(mNewsList);
+                        new Handler(Looper.getMainLooper()).post(new Runnable(){
+                            @Override
+                            public void run() {
+                                final RecyclerView recyclerView = (RecyclerView) swipeRefreshLayout.findViewById(R.id.news_title_view);
+                                recyclerView.setAdapter(adapter);
+                                adapter.setCanLoadMore(false);
+                                swipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+
+                        adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
+                            @Override
+                            public void onClick(final int position) {
+                                News news = mNewsList.get(position);
+                                NewsContentActivity.actionStart(getActivity(), news.getTitle(), news.getTime(), news.getSource(), news.getContent());
+                            }
+                        });
+                    }
+                }).start();
+
+
+                return true;
+            }
+
+            //输入文字发生改变
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
+        //点击搜索图标，搜索框展开时的回调
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
 
