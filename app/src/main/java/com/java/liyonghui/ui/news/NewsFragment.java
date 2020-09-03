@@ -75,9 +75,18 @@ public class NewsFragment extends Fragment{
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                //这里获取数据的逻辑
-                mNewsList = new ArrayList<News>();
-                getNews();
+                if(mTabLayout.getSelectedTabPosition()==(mTabLayout.getTabCount()-1))
+                    new Handler(Looper.getMainLooper()).post(new Runnable(){
+                        @Override
+                        public void run() {
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
+                else{
+                    //这里获取数据的逻辑
+                    mNewsList = new ArrayList<News>();
+                    getNews();
+                }
             }
         });
         final RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.news_title_view);
@@ -174,8 +183,6 @@ public class NewsFragment extends Fragment{
                 }else{
                     Toast.makeText(getActivity(), "操作失败，必须保留一个频道", Toast.LENGTH_SHORT).show();
                 }
-
-
             default:
         }
     }
@@ -187,8 +194,6 @@ public class NewsFragment extends Fragment{
 //                doWeiboShare();
 //                return true;
             case R.id.history:
-                Toast.makeText(getActivity(), "History", Toast.LENGTH_SHORT).show();
-
                 Objects.requireNonNull(mTabLayout.getTabAt(mTabLayout.getTabCount() - 1)).select();
                 mNewsList = News.listAll(News.class);
                 adapter = new NewsAdapter(mNewsList);
@@ -340,6 +345,8 @@ public class NewsFragment extends Fragment{
         menu.clear();
         inflater.inflate(R.menu.actionbar_menu, menu);
     }
+
+
 
 }
 
