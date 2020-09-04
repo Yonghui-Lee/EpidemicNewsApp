@@ -31,7 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.tabs.TabLayout;
-import com.java.liyonghui.InvertedIndex;
+
 import com.java.liyonghui.MainActivity;
 import com.java.liyonghui.News;
 import com.java.liyonghui.NewsContentActivity;
@@ -197,7 +197,8 @@ public class NewsFragment extends Fragment{
         switch (item.getItemId()) {
             case R.id.history:
                 Objects.requireNonNull(mTabLayout.getTabAt(mTabLayout.getTabCount() - 1)).select();
-                mNewsList = News.listAll(News.class);
+                mNewsList = Select.from(News.class)
+                    .where(Condition.prop("content").notEq("")).list();
                 adapter = new NewsAdapter(mNewsList);
                 new Handler(Looper.getMainLooper()).post(new Runnable(){
                     @Override
@@ -321,7 +322,7 @@ public class NewsFragment extends Fragment{
                 String time = jsonObject.getString("time");
                 String content = jsonObject.getString("content");
                 String source = jsonObject.getString("source");
-//                if(content.equals("")) continue;
+                if(content.equals("")) continue;
                 News news = new News(id, title, content, time, source);
                 newsList.add(news);
             }
@@ -359,77 +360,131 @@ public class NewsFragment extends Fragment{
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        ArrayList<News> newsList = new ArrayList<>();
-                        List<InvertedIndex> li = Select.from(InvertedIndex.class)
-                                .where(Condition.prop("myword").eq(queryText)).list();
-                        Log.d("this",String.valueOf(li.size()));
-
-                        HashSet<String> set = new HashSet<>();
-                        for(InvertedIndex in :li){
-                            String s = in.getIndex();
-                            set.add(s);
-                        }
-                        int i = 0;
-                        for (String str : set) {
-                            try{
-                                if(i++ > 15) break;
-                                OkHttpClient client= new OkHttpClient();
-                                Request.Builder reqBuild = new Request.Builder();
-                                HttpUrl.Builder urlBuilder =HttpUrl.parse("https://covid-dashboard-api.aminer.cn/event/"+str)
-                                        .newBuilder();
-                                reqBuild.url(urlBuilder.build());
-                                Request request = reqBuild.build();
-                                Response response = client.newCall(request).execute();
-                                String responseData = response.body().string();
-                                JSONObject outerJSON = new JSONObject(responseData);
-                                JSONObject innerJSON = (JSONObject)outerJSON.get("data");
-                                String id = innerJSON.getString("_id");
-                                String title = innerJSON.getString("title");
-                                String time = innerJSON.getString("time");
-                                String content = innerJSON.getString("content");
-                                String source = innerJSON.getString("source");
-                                News news = new News(id, title, content, time, source);
-                                newsList.add(news);
-
-
-                                if(i==5){
-                                    mNewsList = newsList;
-                                    adapter = new NewsAdapter(mNewsList);
-                                    new Handler(Looper.getMainLooper()).post(new Runnable(){
-                                        @Override
-                                        public void run() {
-                                            final RecyclerView recyclerView = (RecyclerView) swipeRefreshLayout.findViewById(R.id.news_title_view);
-                                            recyclerView.setAdapter(adapter);
-                                            adapter.setCanLoadMore(false);
-                                            swipeRefreshLayout.setRefreshing(false);
-                                        }
-                                    });
-
-                                    adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
-                                        @Override
-                                        public void onClick(final int position) {
-                                            News news = mNewsList.get(position);
-                                            NewsContentActivity.actionStart(getActivity(), news.getTitle(), news.getTime(), news.getSource(), news.getContent());
-                                        }
-                                    });
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-
-
-                        mNewsList = newsList;
+                        mNewsList = Select.from(News.class)
+                                .where(Condition.prop("title").like("%" + queryText +"%")).list();
+                        adapter = new NewsAdapter(mNewsList);
                         new Handler(Looper.getMainLooper()).post(new Runnable(){
                             @Override
                             public void run() {
-                                adapter.setData(mNewsList);
+                                final RecyclerView recyclerView = (RecyclerView) swipeRefreshLayout.findViewById(R.id.news_title_view);
+                                recyclerView.setAdapter(adapter);
                                 adapter.setCanLoadMore(false);
+                                swipeRefreshLayout.setRefreshing(false);
                             }
                         });
+
+                        adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
+                            @Override
+                            public void onClick(final int position) {
+                                final News news = mNewsList.get(position);
+
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        try{
+                                            OkHttpClient client= new OkHttpClient();
+                                            Request.Builder reqBuild = new Request.Builder();
+                                            HttpUrl.Builder urlBuilder =HttpUrl.parse("https://covid-dashboard-api.aminer.cn/event/"+news.getNewsID())
+                                                    .newBuilder();
+                                            reqBuild.url(urlBuilder.build());
+                                            Request request = reqBuild.build();
+                                            Response response = client.newCall(request).execute();
+                                            String responseData = response.body().string();
+                                            JSONObject outerJSON = new JSONObject(responseData);
+                                            JSONObject innerJSON = (JSONObject)outerJSON.get("data");
+                                            String id = innerJSON.getString("_id");
+                                            String title = innerJSON.getString("title");
+                                            String time = innerJSON.getString("time");
+                                            String content = innerJSON.getString("content");
+                                            String source = innerJSON.getString("source");
+                                            News fullNews = new News(id, title, content, time, source);
+                                            fullNews.save();
+                                            NewsContentActivity.actionStart(getActivity(), fullNews.getTitle(), fullNews.getTime(), fullNews.getSource(), fullNews.getContent());
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }).start();
+
+
+
+                            }
+                        });
+
+//                        ArrayList<News> newsList = new ArrayList<>();
+//                        List<InvertedIndex> li = Select.from(InvertedIndex.class)
+//                                .where(Condition.prop("myword").eq(queryText)).list();
+//                        Log.d("this",String.valueOf(li.size()));
+//
+//                        HashSet<String> set = new HashSet<>();
+//                        for(InvertedIndex in :li){
+//                            String s = in.getIndex();
+//                            set.add(s);
+//                        }
+//                        int i = 0;
+//                        for (String str : set) {
+//                            try{
+//                                if(i++ > 15) break;
+//                                OkHttpClient client= new OkHttpClient();
+//                                Request.Builder reqBuild = new Request.Builder();
+//                                HttpUrl.Builder urlBuilder =HttpUrl.parse("https://covid-dashboard-api.aminer.cn/event/"+str)
+//                                        .newBuilder();
+//                                reqBuild.url(urlBuilder.build());
+//                                Request request = reqBuild.build();
+//                                Response response = client.newCall(request).execute();
+//                                String responseData = response.body().string();
+//                                JSONObject outerJSON = new JSONObject(responseData);
+//                                JSONObject innerJSON = (JSONObject)outerJSON.get("data");
+//                                String id = innerJSON.getString("_id");
+//                                String title = innerJSON.getString("title");
+//                                String time = innerJSON.getString("time");
+//                                String content = innerJSON.getString("content");
+//                                String source = innerJSON.getString("source");
+//                                News news = new News(id, title, content, time, source);
+//                                newsList.add(news);
+//
+//
+//                                if(i==5){
+//                                    mNewsList = newsList;
+//                                    adapter = new NewsAdapter(mNewsList);
+//                                    new Handler(Looper.getMainLooper()).post(new Runnable(){
+//                                        @Override
+//                                        public void run() {
+//                                            final RecyclerView recyclerView = (RecyclerView) swipeRefreshLayout.findViewById(R.id.news_title_view);
+//                                            recyclerView.setAdapter(adapter);
+//                                            adapter.setCanLoadMore(false);
+//                                            swipeRefreshLayout.setRefreshing(false);
+//                                        }
+//                                    });
+//
+//                                    adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
+//                                        @Override
+//                                        public void onClick(final int position) {
+//                                            News news = mNewsList.get(position);
+//                                            NewsContentActivity.actionStart(getActivity(), news.getTitle(), news.getTime(), news.getSource(), news.getContent());
+//                                        }
+//                                    });
+//                                }
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            } catch (IOException e) {
+//                                e.printStackTrace();
+//                            }
+//
+//                        }
+//
+//
+//                        mNewsList = newsList;
+//                        new Handler(Looper.getMainLooper()).post(new Runnable(){
+//                            @Override
+//                            public void run() {
+//                                adapter.setData(mNewsList);
+//                                adapter.setCanLoadMore(false);
+//                            }
+//                        });
                     }
                 }).start();
 

@@ -6,6 +6,7 @@ import android.util.Log;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.java.liyonghui.ui.data.EpidemicData;
 import com.orm.SugarContext;
+import com.orm.query.Condition;
 import com.sina.weibo.sdk.auth.AuthInfo;
 import com.sina.weibo.sdk.openapi.IWBAPI;
 import com.sina.weibo.sdk.openapi.WBAPIFactory;
@@ -56,13 +57,48 @@ public class MainActivity extends AppCompatActivity {
         initSdk();
 
         SugarContext.init(this);
-        InvertedIndex.deleteAll(InvertedIndex.class);
+        //InvertedIndex.deleteAll(InvertedIndex.class);
         News.deleteAll(News.class);
         EpidemicData.deleteAll(EpidemicData.class);
 
         //initInvertedIndex();
 
         initEpidemicData();
+        initNewsData();
+    }
+
+    void initNewsData(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    OkHttpClient client = new OkHttpClient();
+                    Request.Builder reqBuild = new Request.Builder();
+                    HttpUrl.Builder urlBuilder = HttpUrl.parse("https://covid-dashboard.aminer.cn/api/dist/events.json")
+                            .newBuilder();
+                    reqBuild.url(urlBuilder.build());
+                    Request request = reqBuild.build();
+                    Response response = client.newCall(request).execute();
+                    String responseData = response.body().string();
+                    JSONObject outerJSON = new JSONObject(responseData);
+                    JSONArray jsonArray = outerJSON.getJSONArray("datas");
+                    for(int i=0; i<jsonArray.length(); i++){
+                        if(i>4000) break;
+                        JSONObject innerJSON = jsonArray.getJSONObject(i);
+                        String id = innerJSON.getString("_id");
+                        String time = innerJSON.getString("time");
+                        String title = innerJSON.getString("title");
+                        News news = new News(id, title, "", time, "");
+                        //Log.d("this",id+" "+ time+" "+ title);
+                        news.save();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
 
     }
@@ -114,70 +150,70 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
-    void initInvertedIndex(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                dealNews("news");
-                dealNews("paper");
-            }
-        }).start();
-    }
-
-    void dealNews(String newsType){
-        try{
-            OkHttpClient client= new OkHttpClient();
-            int num;
-            if(newsType.equals("news"))
-                num = 2;
-            else
-                num = 2;
-            for(int page=1; page<num; page++){
-                Request.Builder reqBuild = new Request.Builder();
-                HttpUrl.Builder urlBuilder =HttpUrl.parse("https://covid-dashboard.aminer.cn/api/events/list")
-                        .newBuilder();
-                urlBuilder.addQueryParameter("page", String.valueOf(page));
-                urlBuilder.addQueryParameter("size", "500");
-                urlBuilder.addQueryParameter("type", newsType);
-                reqBuild.url(urlBuilder.build());
-                Request request = reqBuild.build();
-                Log.d("this",request.toString());
-                Response response = client.newCall(request).execute();
-                String responseData = response.body().string();
-                JSONObject outerJSON = new JSONObject(responseData);
-                JSONArray jsonArray = outerJSON.getJSONArray("data");
-                for(int i = 0; i < jsonArray.length(); i++){
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    String seg = jsonObject.getString("seg_text");
-                    String id = jsonObject.getString("_id");
-                    //Log.d("inverseIndex",newsType+i+seg);
-                    String[] words = seg.split(" ");
-                    for(String word : words){
-                        if(isLetterOrChinese(word)){
-                            Log.d("this",word);
-                            InvertedIndex invertedIndex = new InvertedIndex();
-                            invertedIndex.setIndex(id);
-                            invertedIndex.setWord(word);
-                            invertedIndex.save();
-                        }
-                    }
-                }
-
-            }
-
-//            List<InvertedIndex> li = Select.from(InvertedIndex.class)
-//                    .where(Condition.prop("myword").eq("year")).list();
-//            Log.d("this",String.valueOf(li.size()));
-//            for(InvertedIndex in :li){
-//                String s = in.getIndex();
-//                Log.d("InvertedIndex",s);
+//    void initInvertedIndex(){
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                dealNews("news");
+//                dealNews("paper");
 //            }
-
-    } catch (IOException | JSONException e) {
-        e.printStackTrace();
-    }
-
-}
+//        }).start();
+//    }
+//
+//    void dealNews(String newsType){
+//        try{
+//            OkHttpClient client= new OkHttpClient();
+//            int num;
+//            if(newsType.equals("news"))
+//                num = 2;
+//            else
+//                num = 2;
+//            for(int page=1; page<num; page++){
+//                Request.Builder reqBuild = new Request.Builder();
+//                HttpUrl.Builder urlBuilder =HttpUrl.parse("https://covid-dashboard.aminer.cn/api/events/list")
+//                        .newBuilder();
+//                urlBuilder.addQueryParameter("page", String.valueOf(page));
+//                urlBuilder.addQueryParameter("size", "500");
+//                urlBuilder.addQueryParameter("type", newsType);
+//                reqBuild.url(urlBuilder.build());
+//                Request request = reqBuild.build();
+//                Log.d("this",request.toString());
+//                Response response = client.newCall(request).execute();
+//                String responseData = response.body().string();
+//                JSONObject outerJSON = new JSONObject(responseData);
+//                JSONArray jsonArray = outerJSON.getJSONArray("data");
+//                for(int i = 0; i < jsonArray.length(); i++){
+//                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+//                    String seg = jsonObject.getString("seg_text");
+//                    String id = jsonObject.getString("_id");
+//                    //Log.d("inverseIndex",newsType+i+seg);
+//                    String[] words = seg.split(" ");
+//                    for(String word : words){
+//                        if(isLetterOrChinese(word)){
+//                            Log.d("this",word);
+//                            InvertedIndex invertedIndex = new InvertedIndex();
+//                            invertedIndex.setIndex(id);
+//                            invertedIndex.setWord(word);
+//                            invertedIndex.save();
+//                        }
+//                    }
+//                }
+//
+//            }
+//
+////            List<InvertedIndex> li = Select.from(InvertedIndex.class)
+////                    .where(Condition.prop("myword").eq("year")).list();
+////            Log.d("this",String.valueOf(li.size()));
+////            for(InvertedIndex in :li){
+////                String s = in.getIndex();
+////                Log.d("InvertedIndex",s);
+////            }
+//
+//    } catch (IOException | JSONException e) {
+//        e.printStackTrace();
+//    }
+//
+//}
 
     public static boolean isLetterOrChinese(String str) {
         String regex = "^[a-zA-Z\u4e00-\u9fa5]+$";
