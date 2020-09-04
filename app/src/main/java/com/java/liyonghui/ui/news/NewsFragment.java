@@ -354,7 +354,6 @@ public class NewsFragment extends Fragment{
             //文字输入完成，提交的回调
             @Override
             public boolean onQueryTextSubmit(final String queryText) {
-                Toast.makeText(getActivity(), "onQueryTextSubmit = " + queryText, Toast.LENGTH_SHORT).show();
                 searchView.setIconified(true);
                 Objects.requireNonNull(mTabLayout.getTabAt(mTabLayout.getTabCount() - 1)).select();
                 new Thread(new Runnable() {
@@ -391,6 +390,29 @@ public class NewsFragment extends Fragment{
                                 String source = innerJSON.getString("source");
                                 News news = new News(id, title, content, time, source);
                                 newsList.add(news);
+
+
+                                if(i==5){
+                                    mNewsList = newsList;
+                                    adapter = new NewsAdapter(mNewsList);
+                                    new Handler(Looper.getMainLooper()).post(new Runnable(){
+                                        @Override
+                                        public void run() {
+                                            final RecyclerView recyclerView = (RecyclerView) swipeRefreshLayout.findViewById(R.id.news_title_view);
+                                            recyclerView.setAdapter(adapter);
+                                            adapter.setCanLoadMore(false);
+                                            swipeRefreshLayout.setRefreshing(false);
+                                        }
+                                    });
+
+                                    adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
+                                        @Override
+                                        public void onClick(final int position) {
+                                            News news = mNewsList.get(position);
+                                            NewsContentActivity.actionStart(getActivity(), news.getTitle(), news.getTime(), news.getSource(), news.getContent());
+                                        }
+                                    });
+                                }
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             } catch (IOException e) {
@@ -401,22 +423,11 @@ public class NewsFragment extends Fragment{
 
 
                         mNewsList = newsList;
-                        adapter = new NewsAdapter(mNewsList);
                         new Handler(Looper.getMainLooper()).post(new Runnable(){
                             @Override
                             public void run() {
-                                final RecyclerView recyclerView = (RecyclerView) swipeRefreshLayout.findViewById(R.id.news_title_view);
-                                recyclerView.setAdapter(adapter);
+                                adapter.setData(mNewsList);
                                 adapter.setCanLoadMore(false);
-                                swipeRefreshLayout.setRefreshing(false);
-                            }
-                        });
-
-                        adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
-                            @Override
-                            public void onClick(final int position) {
-                                News news = mNewsList.get(position);
-                                NewsContentActivity.actionStart(getActivity(), news.getTitle(), news.getTime(), news.getSource(), news.getContent());
                             }
                         });
                     }

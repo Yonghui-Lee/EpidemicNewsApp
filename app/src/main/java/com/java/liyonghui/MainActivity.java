@@ -1,17 +1,11 @@
 package com.java.liyonghui;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.provider.UserDictionary;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.java.liyonghui.channel.Channel;
+import com.java.liyonghui.ui.data.EpidemicData;
 import com.orm.SugarContext;
-import com.orm.query.Condition;
-import com.orm.query.Select;
 import com.sina.weibo.sdk.auth.AuthInfo;
 import com.sina.weibo.sdk.openapi.IWBAPI;
 import com.sina.weibo.sdk.openapi.WBAPIFactory;
@@ -27,7 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Iterator;
 
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -64,19 +58,70 @@ public class MainActivity extends AppCompatActivity {
         SugarContext.init(this);
         InvertedIndex.deleteAll(InvertedIndex.class);
         News.deleteAll(News.class);
+        EpidemicData.deleteAll(EpidemicData.class);
+
+        initInvertedIndex();
+
+        initEpidemicData();
 
 
+    }
+
+
+    void initEpidemicData(){
         new Thread(new Runnable() {
             @Override
             public void run() {
-                initInvertedIndex();
+                try {
+
+                    OkHttpClient client = new OkHttpClient();
+                    Request.Builder reqBuild = new Request.Builder();
+                    HttpUrl.Builder urlBuilder = HttpUrl.parse("https://covid-dashboard.aminer.cn/api/dist/epidemic.json")
+                            .newBuilder();
+                    reqBuild.url(urlBuilder.build());
+                    Request request = reqBuild.build();
+                    Response response = client.newCall(request).execute();
+                    String responseData = response.body().string();
+                    JSONObject outerJSON = new JSONObject(responseData);
+                    //通过迭代器获得json当中所有的key值
+                    Iterator keys = outerJSON.keys();
+                    //然后通过循环遍历出的key值
+                    while (keys.hasNext()) {
+                        String key = String.valueOf(keys.next());
+                        boolean isChinaprovinces = isChinaProvince(key);
+                        boolean isCountries = isCountry(key);
+                        if(isChinaprovinces||isCountries){
+                            JSONArray jsonArray = outerJSON.getJSONObject(key).getJSONArray("data");
+                            JSONArray jsonAr = jsonArray.getJSONArray(jsonArray.length()-1);
+                            int confirmed = jsonAr.getInt(0);
+                            int cured = jsonAr.getInt(2);
+                            int dead = jsonAr.getInt(3);
+                            EpidemicData epidemicData;
+                            if(isChinaprovinces){
+                                epidemicData = new EpidemicData(key.substring(6),"province",confirmed,cured,dead);
+                            }else{
+                                epidemicData = new EpidemicData(key,"country",confirmed,cured,dead);
+                            }
+                            epidemicData.save();
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }).start();
     }
 
     void initInvertedIndex(){
-        dealNews("news");
-        dealNews("paper");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                dealNews("news");
+                dealNews("paper");
+            }
+        }).start();
     }
 
     void dealNews(String newsType){
@@ -92,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
                 HttpUrl.Builder urlBuilder =HttpUrl.parse("https://covid-dashboard.aminer.cn/api/events/list")
                         .newBuilder();
                 urlBuilder.addQueryParameter("page", String.valueOf(page));
-                urlBuilder.addQueryParameter("size", "2000");
+                urlBuilder.addQueryParameter("size", "500");
                 urlBuilder.addQueryParameter("type", newsType);
                 reqBuild.url(urlBuilder.build());
                 Request request = reqBuild.build();
@@ -139,6 +184,15 @@ public class MainActivity extends AppCompatActivity {
         return str.matches(regex);
     }
 
+    public static boolean isChinaProvince(String str) {
+        String regex = "^China\\|(\\w|\\s)*$";
+        return str.matches(regex);
+    }
+
+    public static boolean isCountry(String str) {
+        String regex = "^(\\w|\\s)*$";
+        return str.matches(regex);
+    }
 
 
     private void initSdk() {
