@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         News.deleteAll(News.class);
         EpidemicData.deleteAll(EpidemicData.class);
 
-        initInvertedIndex();
+        //initInvertedIndex();
 
         initEpidemicData();
 
@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static boolean isCountry(String str) {
         String regex = "^(\\w|\\s)*$";
-        return str.matches(regex);
+        return str.matches(regex) && !str.equals("World");
     }
 
 

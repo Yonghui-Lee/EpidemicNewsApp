@@ -14,4 +14,6 @@
     <string name="channel_hint">单击增删</string>
     <string name="my_channel">我的频道</string>
     <string name="more_channel">更多频道</string>
+    <string name="data_chart">确诊人数前五地区</string>
+    <string name="data_table">整体数据</string>
 </resources>

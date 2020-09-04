@@ -16,11 +16,32 @@
             android:layout_height="40dp"
             app:tabMode="fixed"
             />
+        <TextView
+            android:id="@+id/data_title1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/data_chart"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:textSize="18sp" />
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/barChart"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            />
+        <TextView
+            android:id="@+id/data_title2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:text="@string/data_table"
+            android:textStyle="bold"
+            android:textSize="18sp" />
         <com.bin.david.form.core.SmartTable
+            android:layout_marginTop="20dp"
             android:id="@+id/province_table"
             android:layout_width="match_parent"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="40dip"
             android:layout_height="300dp"
             />
     </LinearLayout>
