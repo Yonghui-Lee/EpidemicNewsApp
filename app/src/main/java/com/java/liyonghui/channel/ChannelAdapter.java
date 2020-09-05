@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.java.liyonghui.R;
 import com.java.liyonghui.channel.Channel;
 
+
 import java.util.List;
 
 
@@ -62,7 +63,7 @@ public class ChannelAdapter extends BaseAdapter {
     }
 
 
-    public List<Channel> getChannnelLst() {
+    public List<Channel> getChannelList() {
         return channelList;
     }
 

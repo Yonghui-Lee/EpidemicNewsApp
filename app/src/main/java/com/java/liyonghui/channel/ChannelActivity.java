@@ -232,7 +232,7 @@ public class ChannelActivity extends Activity implements AdapterView.OnItemClick
         Intent intent= new Intent();
         boolean newsSelected = true;
         boolean paperSelected = true;
-        for(Channel channel : otherAdapter.getChannnelLst()){
+        for(Channel channel : otherAdapter.getChannelList()){
             if(channel.getName().equals("NEWS"))
                 newsSelected = false;
             if(channel.getName().equals("PAPER"))

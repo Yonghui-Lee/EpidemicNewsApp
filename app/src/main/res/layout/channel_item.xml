@@ -13,9 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:gravity="center"
+        android:textStyle="bold"
         android:minHeight="40dp"
         android:minWidth="70dp"
         android:textSize="15sp" />
-
-
 </RelativeLayout>
