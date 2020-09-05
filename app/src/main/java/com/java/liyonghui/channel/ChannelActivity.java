@@ -46,8 +46,8 @@ public class ChannelActivity extends Activity implements AdapterView.OnItemClick
      * 初始化数据
      */
     private void initData(boolean newsSelected,boolean paperSelected) {
-        userChannelList = new ArrayList<Channel>();
-        otherChannelList = new ArrayList<Channel>();
+        userChannelList = new ArrayList<>();
+        otherChannelList = new ArrayList<>();
 
         if(newsSelected)
             userChannelList.add(new Channel("NEWS"));
@@ -69,8 +69,8 @@ public class ChannelActivity extends Activity implements AdapterView.OnItemClick
 
 
     private void initView() {
-        userGridView = (GridView) findViewById(R.id.userGridView);
-        otherGridView = (GridView) findViewById(R.id.otherGridView);
+        userGridView = findViewById(R.id.userGridView);
+        otherGridView = findViewById(R.id.otherGridView);
     }
 
     @Override
@@ -213,22 +213,9 @@ public class ChannelActivity extends Activity implements AdapterView.OnItemClick
     }
 
 
-    private void saveChannel() {
-//        ChannelManage.getManage(AppApplication.getApp().getSQLHelper()).deleteAllChannel();
-//        ChannelManage.getManage(AppApplication.getApp().getSQLHelper()).saveUserChannel(userAdapter.getChannnelLst());
-//        ChannelManage.getManage(AppApplication.getApp().getSQLHelper()).saveOtherChannel(otherAdapter.getChannnelLst());
-    }
 
     @Override
     public void onBackPressed() {
-//        saveChannel();
-//        if (userAdapter.isListChanged()) {
-//            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-//            setResult(MainActivity.CHANNELRESULT, intent);
-//            finish();
-//        } else {
-//            super.onBackPressed();
-//        }
         Intent intent= new Intent();
         boolean newsSelected = true;
         boolean paperSelected = true;

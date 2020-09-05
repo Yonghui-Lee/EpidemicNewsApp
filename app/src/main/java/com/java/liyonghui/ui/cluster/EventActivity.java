@@ -4,8 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SearchRecentSuggestionsProvider;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Window;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -19,9 +22,10 @@ import java.util.ArrayList;
 
 public class EventActivity extends AppCompatActivity {
     private ArrayList<Event> eventList;
-    public static void actionStart(Context context, ArrayList<String> events) {
+    public static void actionStart(Context context, ArrayList<String> events, String cluster) {
         Intent intent = new Intent(context, EventActivity.class);
         intent.putStringArrayListExtra("events",events);
+        intent.putExtra("cluster",cluster);
         context.startActivity(intent);
     }
 
@@ -29,7 +33,12 @@ public class EventActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.cluster_content);
+        String cluster = getIntent().getStringExtra("cluster");
+        Log.e("this",cluster);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(cluster);
         eventList = new ArrayList<>();
         ArrayList<String> arr = getIntent().getStringArrayListExtra("events");// 获取传入的新闻标题
         for(String s:arr){

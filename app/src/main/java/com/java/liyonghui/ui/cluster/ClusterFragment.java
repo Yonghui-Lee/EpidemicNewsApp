@@ -70,7 +70,7 @@ public class ClusterFragment extends Fragment {
 //                        ProductDetailActivity.class);
 //                intent.putExtra("productId", position);//携带参数
 //                startActivity(intent);'
-                EventActivity.actionStart(getActivity(),invertedIndex.get(channel.getName()));
+                EventActivity.actionStart(getActivity(),invertedIndex.get(channel.getName()),channel.getName());
             }
         });
 
