@@ -530,11 +530,12 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
         TextView newsTitleText;
         TextView newsTimeText;
+        TextView newsSourceText;
         public ViewHolder(View view) {
             super(view);
             newsTitleText = (TextView) view.findViewById(R.id.news_title);
             newsTimeText = (TextView) view.findViewById(R.id.news_time);
-
+            newsSourceText = (TextView) view.findViewById(R.id.news_source);
         }
 
     }
@@ -567,17 +568,23 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
             News news = mNewsList.get(position);
             //这里必须强制转换
             //如果外层的判断条件改为if(holder instance ContentViewHolder)，这里输入holder后会自动转换
-            String title,time;
+            String title,time,source;
+            if(news.getSource().equals(""))
+                source = "来源：未知";
+            else source = "来源："+ news.getSource();
             if(news.getIsRead()){
                 title = "<font color = \"#dcdcdc\">" + news.getTitle() + "</font>";
-                time = "<font color = \"#dcdcdc\">" + news.getTime() + "</font>";
+                time = "<font color = \"#dcdcdc\">" + "时间：" + news.getTime() + "</font>";
+                source = "<font color = \"#dcdcdc\">" + source + "</font>";
             }else{
                 title = "<font color = \"#000000\">" + news.getTitle() + "</font>";
                 time = "<font color = \"#000000\">" + news.getTime() + "</font>";
+                source = "<font color = \"#000000\">" + source + "</font>";
             }
 
             holder.newsTitleText.setText(Html.fromHtml(title,Html.FROM_HTML_MODE_LEGACY));
             holder.newsTimeText.setText(Html.fromHtml(time,Html.FROM_HTML_MODE_LEGACY));
+            holder.newsSourceText.setText(Html.fromHtml(source,Html.FROM_HTML_MODE_LEGACY));
         } else {
             Log.d("mytest", "isCanLoadMore: " + isCanLoadMore);
             if (isCanLoadMore) {
@@ -611,10 +618,11 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         return VIEW_TYPE_CONTENT;
     }
 
-    //ContentView，水果们
+    //ContentView
     class ContentViewHolder extends ViewHolder {
         TextView news_title = itemView.findViewById(R.id.news_title);
         TextView news_time = itemView.findViewById(R.id.news_time);
+        TextView news_source = itemView.findViewById(R.id.news_source);
         public ContentViewHolder(View itemView) {
             super(itemView);
         }
@@ -658,12 +666,6 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
             }
         };
         recyclerView.addOnScrollListener(mOnScrollListener);
-//        mAdapterDataObserver = new RecyclerView.AdapterDataObserver() {
-//            @Override
-//            public void onChanged() {
-//                super.onChanged();
-//            }
-//        };
         //初始化的时候如果未填满一页，那么肯定就没有更多数据了
 //        if (mNewsList.size() < PER_PAGE) {
 //            setCanLoadMore(false);
@@ -679,9 +681,6 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         if (mOnScrollListener != null) {
             recyclerView.removeOnScrollListener(mOnScrollListener);
         }
-//        if (mAdapterDataObserver != null) {
-//            unregisterAdapterDataObserver(mAdapterDataObserver);
-//        }
         mOnScrollListener = null;
     }
 
