@@ -3,9 +3,11 @@ package com.java.liyonghui.ui.data;
 import com.bin.david.form.annotation.SmartColumn;
 import com.bin.david.form.annotation.SmartTable;
 import com.orm.SugarRecord;
+import com.orm.dsl.Unique;
 
 @SmartTable(name="用户信息列表")
 public class EpidemicData extends SugarRecord {
+    @Unique
     @SmartColumn(id =1,name = "地区")
     private String location;
     private String category;
