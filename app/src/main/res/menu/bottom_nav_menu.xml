@@ -7,6 +7,11 @@
         android:title="@string/title_news" />
 
     <item
+        android:id="@+id/navigation_cluster"
+        android:icon="@drawable/baseline_dynamic_feed_black_18dp"
+        android:title="@string/title_cluster" />
+
+    <item
         android:id="@+id/navigation_wiki"
         android:icon="@drawable/baseline_dashboard_black_18dp"
         android:title="@string/title_wiki" />

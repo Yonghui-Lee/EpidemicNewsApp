@@ -12,6 +12,12 @@
         tools:layout="@layout/fragment_news" />
 
     <fragment
+        android:id="@+id/navigation_cluster"
+        android:name="com.java.liyonghui.ui.cluster.ClusterFragment"
+        android:label="@string/title_cluster"
+        tools:layout="@layout/fragment_cluster" />
+
+    <fragment
         android:id="@+id/navigation_wiki"
         android:name="com.java.liyonghui.ui.wiki.WikiFragment"
         android:label="@string/title_wiki"

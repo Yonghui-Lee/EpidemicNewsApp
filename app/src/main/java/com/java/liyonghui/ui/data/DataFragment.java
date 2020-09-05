@@ -24,7 +24,6 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.android.material.tabs.TabLayout;
-import com.java.liyonghui.InvertedIndex;
 import com.java.liyonghui.R;
 import com.orm.query.Condition;
 import com.orm.query.Select;
