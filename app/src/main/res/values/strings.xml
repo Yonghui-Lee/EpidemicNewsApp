@@ -18,4 +18,8 @@
     <string name="data_chart">确诊人数前五地区</string>
     <string name="data_table">整体数据</string>
     <string name="cluster__channel">聚类频道</string>
+    <string name="wiki_search">搜索</string>
+    <string name="wiki_image">词条图片</string>
+    <string name="wiki_relations">relations</string>
+    <string name="wiki_properties">properties</string>
 </resources>

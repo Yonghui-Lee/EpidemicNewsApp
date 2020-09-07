@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation = "vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="20dp"
+    android:background="@drawable/txt_border">
+    <LinearLayout
+        android:orientation = "horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp">
+        <ImageView
+            android:id="@+id/wiki_image"
+            android:layout_width = "100dp"
+            android:layout_height = "100dp"
+            android:layout_margin = "5dp"
+            android:scaleType="fitXY"
+            android:contentDescription="@string/wiki_image" />
+
+        <LinearLayout
+            android:orientation = "vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/wiki_label"
+                android:layout_width = "wrap_content"
+                android:layout_height = "wrap_content"
+                android:textStyle="bold"
+                android:textSize="15sp"
+                android:textColor="#000000"/>
+            <TextView
+                android:id="@+id/wiki_info"
+                android:layout_width = "wrap_content"
+                android:layout_height = "wrap_content"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_margin="3dp"
+        android:background="#5f9ea0" />
+    <TextView
+        android:id="@+id/wiki_properties"
+        android:layout_width = "wrap_content"
+        android:layout_height = "wrap_content"
+        android:text="@string/wiki_properties"/>
+
+    <com.java.liyonghui.ui.wiki.RelationGridView
+        android:id="@+id/propertiesView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="5dip"
+        android:horizontalSpacing="5dip"
+        android:numColumns="1" />
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#5f9ea0"
+        android:layout_marginTop="10dp"/>
+    <TextView
+        android:id="@+id/wiki_relation"
+        android:layout_width = "wrap_content"
+        android:layout_height = "wrap_content"
+        android:text="@string/wiki_relations"/>
+
+    <com.java.liyonghui.ui.wiki.RelationGridView
+        android:id="@+id/relation_gridview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="5dip"
+        android:horizontalSpacing="5dip"
+        android:numColumns="2" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="20dp"
+        android:background="#000000" />
+</LinearLayout>
+
