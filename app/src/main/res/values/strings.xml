@@ -22,4 +22,5 @@
     <string name="wiki_image">词条图片</string>
     <string name="wiki_relations">relations</string>
     <string name="wiki_properties">properties</string>
+    <string name="scholar_image">scholar_image</string>
 </resources>
