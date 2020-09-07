@@ -64,7 +64,7 @@ public class ScholarAdapter extends RecyclerView.Adapter<ScholarAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(ScholarAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(ScholarAdapter.ViewHolder holder, final int position) {
         Scholar scholar = mScholarList.get(position);
         if(holder.scholarImage==null)
             Log.e("this","NULLLLLL");
@@ -75,13 +75,22 @@ public class ScholarAdapter extends RecyclerView.Adapter<ScholarAdapter.ViewHold
         }
 
         holder.scholarNameText.setText(scholar.getName());
-        holder.scholarHindexText.setText(String.valueOf(scholar.getHindex()));
-        holder.scholarActivityText.setText(String.valueOf(scholar.getActivity()));
-        holder.scholarSociabilityText.setText(String.valueOf(scholar.getSociability()));
-        holder.scholarCititationsText.setText(String.valueOf(scholar.getCitations()));
-        holder.scholarPubsText.setText(String.valueOf(scholar.getPubs()));
+        holder.scholarHindexText.setText("H:"+String.valueOf(scholar.getHindex()));
+        holder.scholarActivityText.setText("A:"+String.valueOf(scholar.getActivity()));
+        holder.scholarSociabilityText.setText("S:"+String.valueOf(scholar.getSociability()));
+        holder.scholarCititationsText.setText("C:"+String.valueOf(scholar.getCitations()));
+        holder.scholarPubsText.setText("P:"+String.valueOf(scholar.getPubs()));
         holder.scholarPositionText.setText(scholar.getPosition());
         holder.scholarAffiliationText.setText(scholar.getAffiliation());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) {
+                    listener.onClick(position);
+                }
+            }
+        });
     }
 
     @Override
@@ -94,4 +103,15 @@ public class ScholarAdapter extends RecyclerView.Adapter<ScholarAdapter.ViewHold
         notifyDataSetChanged();
 
     }
+
+    public interface OnItemClickListener {
+        void onClick(int position);
+    }
+
+    private ScholarAdapter.OnItemClickListener listener;
+
+    public void setOnItemClickListener(ScholarAdapter.OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
 }

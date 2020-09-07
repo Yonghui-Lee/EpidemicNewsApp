@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,8 +22,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.mikephil.charting.highlight.Highlight;
 import com.google.android.material.tabs.TabLayout;
+import com.java.liyonghui.News;
+import com.java.liyonghui.NewsContentActivity;
 import com.java.liyonghui.R;
-import com.java.liyonghui.ui.news.NewsFragment;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,7 +50,7 @@ public class ScholarFragment extends Fragment {
     private ArrayList<Scholar> passedAwayScholarList = new ArrayList<>();
     private TabLayout mTabLayout;
     private ScholarAdapter mAdapter;
-
+    private String scholarType;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         scholarViewModel =
@@ -60,6 +63,7 @@ public class ScholarFragment extends Fragment {
 
         mTabLayout.addTab(mTabLayout.newTab().setText("高关注学者"));
         mTabLayout.addTab(mTabLayout.newTab().setText("追忆学者"));
+        scholarType = "高关注学者";
 
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -68,6 +72,7 @@ public class ScholarFragment extends Fragment {
                     new Handler(Looper.getMainLooper()).post(new Runnable(){
                         @Override
                         public void run() {
+                            scholarType = "高关注学者";
                             mAdapter.setData(highlightScholarList);
                         }
                     });
@@ -76,6 +81,7 @@ public class ScholarFragment extends Fragment {
                     new Handler(Looper.getMainLooper()).post(new Runnable(){
                         @Override
                         public void run() {
+                            scholarType = "追忆学者";
                             mAdapter.setData(passedAwayScholarList);
                         }
                     });
@@ -161,11 +167,23 @@ public class ScholarFragment extends Fragment {
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
                 }
+                mAdapter= new ScholarAdapter(getActivity(), highlightScholarList);
+                mAdapter.setOnItemClickListener(new ScholarAdapter.OnItemClickListener() {
+                    @Override
+                    public void onClick(final int position) {
+                        Scholar scholar;
+                        if(scholarType.equals("高关注学者"))
+                            scholar = highlightScholarList.get(position);
+                        else
+                            scholar = passedAwayScholarList.get(position);
 
+                        //NewsContentActivity.actionStart(getActivity(), news.getTitle(), news.getTime(), news.getSource(), news.getContent());
+                        Toast.makeText(getActivity(), scholar.getName(), Toast.LENGTH_SHORT).show();
+                    }
+                });
                 new Handler(Looper.getMainLooper()).post(new Runnable(){
                     @Override
                     public void run() {
-                        mAdapter= new ScholarAdapter(getActivity(), highlightScholarList);
                         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                         recyclerView.setAdapter(mAdapter);
                     }
