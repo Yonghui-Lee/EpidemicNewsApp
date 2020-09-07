@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.java.liyonghui.News;
 import com.java.liyonghui.R;
 import com.java.liyonghui.channel.Channel;
 import com.java.liyonghui.ui.cluster.Event;
@@ -86,5 +87,11 @@ public class ScholarAdapter extends RecyclerView.Adapter<ScholarAdapter.ViewHold
     @Override
     public int getItemCount() {
         return mScholarList.size();
+    }
+
+    public void setData(List<Scholar> list) {
+        mScholarList = list;
+        notifyDataSetChanged();
+
     }
 }

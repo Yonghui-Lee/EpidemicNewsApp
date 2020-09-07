@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.mikephil.charting.highlight.Highlight;
+import com.google.android.material.tabs.TabLayout;
 import com.java.liyonghui.R;
 import com.java.liyonghui.ui.news.NewsFragment;
 
@@ -43,7 +44,9 @@ public class ScholarFragment extends Fragment {
     private ScholarViewModel scholarViewModel;
     private RecyclerView recyclerView;
     private ArrayList<Scholar> highlightScholarList = new ArrayList<>();
-    private ArrayList<Scholar> passedAwayScholarList =new ArrayList<>();
+    private ArrayList<Scholar> passedAwayScholarList = new ArrayList<>();
+    private TabLayout mTabLayout;
+    private ScholarAdapter mAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -51,6 +54,40 @@ public class ScholarFragment extends Fragment {
                 ViewModelProviders.of(this).get(ScholarViewModel.class);
         View root = inflater.inflate(R.layout.fragment_scholar, container, false);
         recyclerView = root.findViewById(R.id.scholar_view);
+
+        mTabLayout = root.findViewById(R.id.scholarTabLayout);
+        // 添加 tab item
+
+        mTabLayout.addTab(mTabLayout.newTab().setText("高关注学者"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("追忆学者"));
+
+        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab.getText().equals("高关注学者")) {
+                    new Handler(Looper.getMainLooper()).post(new Runnable(){
+                        @Override
+                        public void run() {
+                            mAdapter.setData(highlightScholarList);
+                        }
+                    });
+                }
+                if (tab.getText().equals("追忆学者")) {
+                    new Handler(Looper.getMainLooper()).post(new Runnable(){
+                        @Override
+                        public void run() {
+                            mAdapter.setData(passedAwayScholarList);
+                        }
+                    });
+                }
+            }
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
 
         new Thread(new Runnable() {
             @Override
@@ -66,8 +103,6 @@ public class ScholarFragment extends Fragment {
                     String responseData = response.body().string();
                     JSONObject outerJSON = new JSONObject(responseData);
                     JSONArray jsonArray = outerJSON.getJSONArray("data");
-
-                    ArrayList<Scholar> scholarList = new ArrayList<>();
 
                     for(int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -116,9 +151,12 @@ public class ScholarFragment extends Fragment {
                         Scholar scholar = new Scholar(image,activity,citations,diversity,gindex,
                                 hindex,pubs,sociability,name,name_zh,address,affiliation,
                                 affiliation_zh, bio,edu,email,homepage,note,position,work,is_passedaway);
-                        scholarList.add(scholar);
+                        if(is_passedaway)
+                            passedAwayScholarList.add(scholar);
+                        else
+                            highlightScholarList.add(scholar);
                     }
-                    highlightScholarList = scholarList;
+
                     Log.e("this",String.valueOf(highlightScholarList.size()));
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
@@ -127,9 +165,9 @@ public class ScholarFragment extends Fragment {
                 new Handler(Looper.getMainLooper()).post(new Runnable(){
                     @Override
                     public void run() {
-                        ScholarAdapter s_adapter= new ScholarAdapter(getActivity(), highlightScholarList);
+                        mAdapter= new ScholarAdapter(getActivity(), highlightScholarList);
                         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                        recyclerView.setAdapter(s_adapter);
+                        recyclerView.setAdapter(mAdapter);
                     }
                 });
             }

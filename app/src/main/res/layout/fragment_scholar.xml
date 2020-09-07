@@ -5,13 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.scholar.ScholarFragment">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/scholar_view"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:cacheColorHint="@null"
-        android:descendantFocusability="blocksDescendants"
-        android:scrollbars="vertical" />
+        >
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/scholarTabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            app:tabMode="fixed"
+            />
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/scholar_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:cacheColorHint="@null"
+            android:descendantFocusability="blocksDescendants"
+            android:scrollbars="vertical" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
