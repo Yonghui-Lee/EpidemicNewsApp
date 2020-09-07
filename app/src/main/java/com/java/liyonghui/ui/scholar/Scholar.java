@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 
 public class  Scholar{
     private Bitmap avatar;
+    private String imageUrl;
     private double activity;
     private double citations;
     private double diversity;
@@ -25,12 +26,13 @@ public class  Scholar{
     private String work;
     private boolean is_passedaway;
     public Scholar(){}
-    public Scholar(Bitmap avatar, double activity, double citations, double diversity, double gindex, double hindex,
+    public Scholar(Bitmap avatar,String imageUrl, double activity, double citations, double diversity, double gindex, double hindex,
                    double pubs, double sociability, String name, String name_zh, String address,
                    String affiliation, String affiliation_zh, String bio, String edu, String email,
                    String homepage, String note, String position, String work, boolean is_passedaway)
     {
         this.avatar = avatar;
+        this.imageUrl = imageUrl;
         this.activity = activity;
         this.citations = citations;
         this.diversity = diversity;
@@ -55,6 +57,8 @@ public class  Scholar{
     public double getActivity() {
         return activity;
     }
+
+    public String getImageUrl(){return imageUrl;}
 
     public String getAffiliation() {
         return affiliation;

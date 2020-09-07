@@ -154,40 +154,57 @@ public class ScholarFragment extends Fragment {
                             position = profile_json.getString("position");
                         if(profile_json.has("work"))
                             work = profile_json.getString("work");
-                        Scholar scholar = new Scholar(image,activity,citations,diversity,gindex,
+                        Scholar scholar = new Scholar(image,avatar,activity,citations,diversity,gindex,
                                 hindex,pubs,sociability,name,name_zh,address,affiliation,
                                 affiliation_zh, bio,edu,email,homepage,note,position,work,is_passedaway);
                         if(is_passedaway)
                             passedAwayScholarList.add(scholar);
                         else
                             highlightScholarList.add(scholar);
+                        if(i==3){
+                            mAdapter= new ScholarAdapter(getActivity(), highlightScholarList);
+                            mAdapter.setOnItemClickListener(new ScholarAdapter.OnItemClickListener() {
+                                @Override
+                                public void onClick(final int position) {
+                                    Scholar scholar;
+                                    if(scholarType.equals("高关注学者"))
+                                        scholar = highlightScholarList.get(position);
+                                    else
+                                        scholar = passedAwayScholarList.get(position);
+
+                                    ScholarDetailActivity.actionStart(getActivity(), scholar);
+                                    Toast.makeText(getActivity(), scholar.getName(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            new Handler(Looper.getMainLooper()).post(new Runnable(){
+                                @Override
+                                public void run() {
+                                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                                    recyclerView.setAdapter(mAdapter);
+                                }
+                            });
+                        }
+                        if(i%16==15){
+                            new Handler(Looper.getMainLooper()).post(new Runnable(){
+                                @Override
+                                public void run() {
+                                    mAdapter.setData(highlightScholarList);
+                                }
+                            });
+                        }
                     }
 
                     Log.e("this",String.valueOf(highlightScholarList.size()));
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
                 }
-                mAdapter= new ScholarAdapter(getActivity(), highlightScholarList);
-                mAdapter.setOnItemClickListener(new ScholarAdapter.OnItemClickListener() {
-                    @Override
-                    public void onClick(final int position) {
-                        Scholar scholar;
-                        if(scholarType.equals("高关注学者"))
-                            scholar = highlightScholarList.get(position);
-                        else
-                            scholar = passedAwayScholarList.get(position);
-
-                        //NewsContentActivity.actionStart(getActivity(), news.getTitle(), news.getTime(), news.getSource(), news.getContent());
-                        Toast.makeText(getActivity(), scholar.getName(), Toast.LENGTH_SHORT).show();
-                    }
-                });
                 new Handler(Looper.getMainLooper()).post(new Runnable(){
                     @Override
                     public void run() {
-                        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                        recyclerView.setAdapter(mAdapter);
+                        mAdapter.setData(highlightScholarList);
                     }
                 });
+
             }
         }).start();
 
