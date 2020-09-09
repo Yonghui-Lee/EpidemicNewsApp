@@ -62,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        //initEpidemicData();
-        //initNewsData();
+        initEpidemicData();
+        initNewsData();
     }
 
     void initNewsData(){

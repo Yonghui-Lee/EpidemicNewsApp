@@ -159,30 +159,27 @@ public class NewsFragment extends Fragment{
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
-        switch (requestCode){
-            case 1:
-                boolean newsSelected = data.getBooleanExtra("news",true);
-                boolean paperSelected = data.getBooleanExtra("paper",true);
-                if(newsSelected || paperSelected)
-                {
-                    mTabLayout.removeAllTabs();
-                    if(newsSelected)
-                        mTabLayout.addTab(mTabLayout.newTab().setText("news"));
-                    if(paperSelected)
-                        mTabLayout.addTab(mTabLayout.newTab().setText("paper"));
-                    mTabLayout.addTab(mTabLayout.newTab().setText(""));
-                    LinearLayout tabStrip = (LinearLayout) mTabLayout.getChildAt(0);
-                    View tabView = tabStrip.getChildAt(mTabLayout.getTabCount()-1);
-                    if (tabView != null) {
-                        tabView.setClickable(false);
-                    }
-                    myNewsType = mTabLayout.getTabAt(0).getText().toString();
-                    mNewsList = new ArrayList<>();
-                    getNews();
-                }else{
-                    Toast.makeText(getActivity(), "操作失败，必须保留一个频道", Toast.LENGTH_SHORT).show();
+        if (requestCode == 1) {
+            boolean newsSelected = data.getBooleanExtra("news", true);
+            boolean paperSelected = data.getBooleanExtra("paper", true);
+            if (newsSelected || paperSelected) {
+                mTabLayout.removeAllTabs();
+                if (newsSelected)
+                    mTabLayout.addTab(mTabLayout.newTab().setText("news"));
+                if (paperSelected)
+                    mTabLayout.addTab(mTabLayout.newTab().setText("paper"));
+                mTabLayout.addTab(mTabLayout.newTab().setText(""));
+                LinearLayout tabStrip = (LinearLayout) mTabLayout.getChildAt(0);
+                View tabView = tabStrip.getChildAt(mTabLayout.getTabCount() - 1);
+                if (tabView != null) {
+                    tabView.setClickable(false);
                 }
-            default:
+                myNewsType = mTabLayout.getTabAt(0).getText().toString();
+                mNewsList = new ArrayList<>();
+                getNews();
+            } else {
+                Toast.makeText(getActivity(), "操作失败，必须保留一个频道", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -315,8 +312,15 @@ public class NewsFragment extends Fragment{
                 String content = jsonObject.getString("content");
                 String source = jsonObject.getString("source");
                 if(content.equals("")) continue;
-                News news = new News(id, title, content, time, source);
-                newsList.add(news);
+                List<News> oldNews = News.find(News.class,"news_id = ?",id);
+                if(oldNews.size()!=0 && oldNews.get(0).getIsRead()){
+                    newsList.add(oldNews.get(0));
+                    Log.e("this","oldNews");
+                }
+                else{
+                    News news = new News(id, title, content, time, source);
+                    newsList.add(news);
+                }
             }
 
         } catch (IOException | JSONException e) {
