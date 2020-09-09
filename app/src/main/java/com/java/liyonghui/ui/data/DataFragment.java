@@ -38,14 +38,11 @@ public class DataFragment extends Fragment {
     private String[] xLabel;
     private BarChart mBarChart;
     private TabLayout mTabLayout;
-    private DataViewModel dataViewModel;
     private String mDataType;
     private List<EpidemicData> mDataList;
     private SmartTable<EpidemicData> table;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        dataViewModel =
-                ViewModelProviders.of(this).get(DataViewModel.class);
         View root = inflater.inflate(R.layout.fragment_data, container, false);
         //setHasOptionsMenu(true);
 

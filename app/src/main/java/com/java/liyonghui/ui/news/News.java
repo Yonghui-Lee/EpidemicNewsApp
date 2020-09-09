@@ -1,4 +1,4 @@
-package com.java.liyonghui;
+package com.java.liyonghui.ui.news;
 
 import com.orm.SugarRecord;
 import com.orm.dsl.Unique;

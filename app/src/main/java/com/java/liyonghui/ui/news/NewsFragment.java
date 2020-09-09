@@ -32,8 +32,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.tabs.TabLayout;
 
-import com.java.liyonghui.MainActivity;
-import com.java.liyonghui.News;
 import com.java.liyonghui.NewsContentActivity;
 import com.java.liyonghui.R;
 import com.java.liyonghui.RecyclerOnScrollerListener;
@@ -47,10 +45,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -63,15 +59,13 @@ public class NewsFragment extends Fragment{
     private int mCurrentPage = 1;
     private static final int PER_PAGE = 30;
     private NewsAdapter adapter;
-    private NewsViewModel newsViewModel;
     private SwipeRefreshLayout swipeRefreshLayout;
     private String myNewsType;
     private TabLayout mTabLayout;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        newsViewModel =
-                ViewModelProviders.of(this).get(NewsViewModel.class);
+
         final View root = inflater.inflate(R.layout.fragment_news, container, false);
         setHasOptionsMenu(true);
 
@@ -89,7 +83,7 @@ public class NewsFragment extends Fragment{
                     });
                 else{
                     //这里获取数据的逻辑
-                    mNewsList = new ArrayList<News>();
+                    mNewsList = new ArrayList<>();
                     getNews();
                 }
             }
@@ -194,34 +188,32 @@ public class NewsFragment extends Fragment{
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.history:
-                Objects.requireNonNull(mTabLayout.getTabAt(mTabLayout.getTabCount() - 1)).select();
-                mNewsList = Select.from(News.class)
+        if (item.getItemId() == R.id.history) {
+            Objects.requireNonNull(mTabLayout.getTabAt(mTabLayout.getTabCount() - 1)).select();
+            mNewsList = Select.from(News.class)
                     .where(Condition.prop("content").notEq("")).list();
-                adapter = new NewsAdapter(mNewsList);
-                new Handler(Looper.getMainLooper()).post(new Runnable(){
-                    @Override
-                    public void run() {
-                        final RecyclerView recyclerView = (RecyclerView) swipeRefreshLayout.findViewById(R.id.news_title_view);
-                        recyclerView.setAdapter(adapter);
-                        adapter.setCanLoadMore(false);
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-                });
+            adapter = new NewsAdapter(mNewsList);
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    final RecyclerView recyclerView = (RecyclerView) swipeRefreshLayout.findViewById(R.id.news_title_view);
+                    recyclerView.setAdapter(adapter);
+                    adapter.setCanLoadMore(false);
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            });
 
-                adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
-                    @Override
-                    public void onClick(final int position) {
-                        News news = mNewsList.get(position);
-                        NewsContentActivity.actionStart(getActivity(), news.getTitle(), news.getTime(), news.getSource(), news.getContent());
-                    }
-                });
+            adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
+                @Override
+                public void onClick(final int position) {
+                    News news = mNewsList.get(position);
+                    NewsContentActivity.actionStart(getActivity(), news.getTitle(), news.getTime(), news.getSource(), news.getContent());
+                }
+            });
 
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     void getNews(){
@@ -401,9 +393,7 @@ public class NewsFragment extends Fragment{
                                             News fullNews = new News(id, title, content, time, source);
                                             fullNews.save();
                                             NewsContentActivity.actionStart(getActivity(), fullNews.getTitle(), fullNews.getTime(), fullNews.getSource(), fullNews.getContent());
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        } catch (IOException e) {
+                                        } catch (JSONException | IOException e) {
                                             e.printStackTrace();
                                         }
                                     }

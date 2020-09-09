@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.java.liyonghui.ui.data.EpidemicData;
+import com.java.liyonghui.ui.news.News;
 import com.orm.SugarContext;
 import com.sina.weibo.sdk.auth.AuthInfo;
 import com.sina.weibo.sdk.openapi.IWBAPI;
@@ -61,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        initEpidemicData();
-        initNewsData();
+        //initEpidemicData();
+        //initNewsData();
     }
 
     void initNewsData(){

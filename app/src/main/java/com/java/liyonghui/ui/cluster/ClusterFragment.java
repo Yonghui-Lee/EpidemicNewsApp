@@ -1,7 +1,5 @@
 package com.java.liyonghui.ui.cluster;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -9,49 +7,34 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.java.liyonghui.News;
-import com.java.liyonghui.NewsContentActivity;
 import com.java.liyonghui.R;
 import com.java.liyonghui.channel.Channel;
 import com.java.liyonghui.channel.ChannelAdapter;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 
 public class ClusterFragment extends Fragment {
     private LinkedHashMap<String, ArrayList<String>> invertedIndex;
-    private ClusterViewModel clusterViewModel;
     private GridView eventGridView;
     ChannelAdapter eventAdapter;
     ArrayList<Channel> eventList;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        clusterViewModel =
-                ViewModelProviders.of(this).get(ClusterViewModel.class);
         View root = inflater.inflate(R.layout.fragment_cluster, container, false);
         final TextView textView = root.findViewById(R.id.text_cluster);
 

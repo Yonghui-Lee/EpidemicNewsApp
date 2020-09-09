@@ -5,18 +5,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.java.liyonghui.News;
 import com.java.liyonghui.R;
-import com.java.liyonghui.channel.Channel;
-import com.java.liyonghui.ui.cluster.Event;
-import com.java.liyonghui.ui.cluster.EventAdapter;
 
 
 import java.util.List;
