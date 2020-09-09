@@ -1,4 +1,4 @@
-package com.java.liyonghui;
+package com.java.liyonghui.ui.news;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;

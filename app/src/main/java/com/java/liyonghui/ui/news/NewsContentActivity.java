@@ -1,29 +1,19 @@
-package com.java.liyonghui;
+package com.java.liyonghui.ui.news;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.sina.weibo.sdk.api.ImageObject;
-import com.sina.weibo.sdk.api.MultiImageObject;
+import com.java.liyonghui.R;
 import com.sina.weibo.sdk.api.TextObject;
-import com.sina.weibo.sdk.api.VideoSourceObject;
-import com.sina.weibo.sdk.api.WebpageObject;
 import com.sina.weibo.sdk.api.WeiboMultiMessage;
 import com.sina.weibo.sdk.auth.AuthInfo;
 import com.sina.weibo.sdk.common.UiError;
@@ -32,13 +22,7 @@ import com.sina.weibo.sdk.openapi.WBAPIFactory;
 import com.sina.weibo.sdk.share.WbShareCallback;
 //import com.sina.weibo.sdk.openapi.IWBAPI;
 //import com.sina.weibo.sdk.openapi.WBAPIFactory;
-import android.view.View.OnClickListener;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.UUID;
 
 public class NewsContentActivity extends AppCompatActivity implements WbShareCallback{
     //在微博开发平台为应用申请的App Key

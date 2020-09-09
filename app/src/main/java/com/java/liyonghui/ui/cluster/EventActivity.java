@@ -2,21 +2,16 @@ package com.java.liyonghui.ui.cluster;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SearchRecentSuggestionsProvider;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
-import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
-import com.java.liyonghui.NewsContentActivity;
 import com.java.liyonghui.R;
-import com.sina.weibo.sdk.auth.AuthInfo;
-import com.sina.weibo.sdk.openapi.WBAPIFactory;
 
 import java.util.ArrayList;
 

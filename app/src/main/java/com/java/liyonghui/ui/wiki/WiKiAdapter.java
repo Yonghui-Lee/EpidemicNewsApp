@@ -92,7 +92,6 @@ public class WiKiAdapter extends RecyclerView.Adapter<WiKiAdapter.ViewHolder> {
         }
 
         SimpleAdapter sa = new SimpleAdapter(mContext,arraylist,R.layout.relation_item,new String[] { "relation", "label"},
-                // ImageItem的XML文件里面的一个ImageView,两个TextView ID
                 new int[] { R.id.relation_text, R.id.relation_label});
         holder.relationGridView.setAdapter(sa);
 
@@ -108,14 +107,15 @@ public class WiKiAdapter extends RecyclerView.Adapter<WiKiAdapter.ViewHolder> {
         }
 
         SimpleAdapter sb = new SimpleAdapter(mContext,propertiesList,R.layout.relation_item,new String[] { "name", "properties"},
-                // ImageItem的XML文件里面的一个ImageView,两个TextView ID
                 new int[] { R.id.relation_text, R.id.relation_label});
         holder.propertiesGridView.setAdapter(sb);
     }
 
     @Override
     public int getItemCount() {
-        return mWiKiList.size();
+        if(mWiKiList!=null){
+            return mWiKiList.size();
+        }else return 0;
     }
 }
 

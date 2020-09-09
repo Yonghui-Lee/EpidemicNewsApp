@@ -3,12 +3,14 @@
     android:orientation = "vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="20dp"
+    android:layout_margin="10dp"
     android:background="@drawable/txt_border">
     <LinearLayout
         android:orientation = "horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_margin="5dp">
         <ImageView
             android:id="@+id/wiki_image"
@@ -45,15 +47,18 @@
         android:id="@+id/wiki_properties"
         android:layout_width = "wrap_content"
         android:layout_height = "wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:text="@string/wiki_properties"/>
 
     <com.java.liyonghui.ui.wiki.RelationGridView
         android:id="@+id/propertiesView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="5dp"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="5dip"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:horizontalSpacing="5dip"
         android:numColumns="1" />
 
@@ -66,6 +71,8 @@
     <TextView
         android:id="@+id/wiki_relation"
         android:layout_width = "wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_height = "wrap_content"
         android:text="@string/wiki_relations"/>
 
@@ -75,7 +82,8 @@
         android:layout_height="wrap_content"
         android:paddingTop="5dp"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="5dip"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:horizontalSpacing="5dip"
         android:numColumns="2" />
 
@@ -83,6 +91,6 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="20dp"
-        android:background="#000000" />
+        android:background="#00000000" />
 </LinearLayout>
 

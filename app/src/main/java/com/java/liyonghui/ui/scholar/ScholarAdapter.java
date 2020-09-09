@@ -90,7 +90,12 @@ public class ScholarAdapter extends RecyclerView.Adapter<ScholarAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        return mScholarList.size();
+
+        if(mScholarList!=null){
+            return mScholarList.size();
+        }else{
+            return 0;
+        }
     }
 
     public void setData(List<Scholar> list) {

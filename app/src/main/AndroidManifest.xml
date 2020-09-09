@@ -23,7 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".NewsContentActivity"
+        <activity android:name=".ui.news.NewsContentActivity"
             android:label="疫情新闻">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

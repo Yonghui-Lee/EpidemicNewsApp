@@ -25,16 +25,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.tabs.TabLayout;
 
-import com.java.liyonghui.NewsContentActivity;
 import com.java.liyonghui.R;
-import com.java.liyonghui.RecyclerOnScrollerListener;
 import com.java.liyonghui.channel.ChannelActivity;
 import com.orm.query.Condition;
 import com.orm.query.Select;
@@ -57,7 +54,7 @@ import okhttp3.Response;
 public class NewsFragment extends Fragment{
     private List<News> mNewsList;
     private int mCurrentPage = 1;
-    private static final int PER_PAGE = 30;
+    private static final int PER_PAGE = 20;
     private NewsAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private String myNewsType;
@@ -112,11 +109,13 @@ public class NewsFragment extends Fragment{
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 if (tab.getText().equals("news")) {
+                    mCurrentPage = 1;
                     myNewsType = "news";
                     mNewsList = new ArrayList<>();
                     getNews();
                 }
                 if (tab.getText().equals("paper")) {
+                    mCurrentPage = 1;
                     myNewsType = "paper";
                     mNewsList = new ArrayList<>();
                     getNews();
@@ -270,6 +269,7 @@ public class NewsFragment extends Fragment{
                     @Override
                     public void onLoadMore(int currentPage) {
                         mCurrentPage = currentPage;
+                        Log.e("this","current page:"+ mCurrentPage);
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
@@ -277,6 +277,7 @@ public class NewsFragment extends Fragment{
                                 new Handler(Looper.getMainLooper()).post(new Runnable(){
                                     @Override
                                     public void run() {
+                                        adapter.setCanLoadMore(true);
                                         adapter.setData(mNewsList);
                                     }
                                 });
@@ -328,13 +329,6 @@ public class NewsFragment extends Fragment{
         }
 
         mNewsList.addAll(newsList);
-//        if(adapter!=null){
-//            if (mNewsList.size() == mCurrentPage * PER_PAGE) {
-//                adapter.setCanLoadMore(true);
-//            } else {
-//                adapter.setCanLoadMore(false);
-//            }
-//        }
 
         return mNewsList;
     }
@@ -407,78 +401,6 @@ public class NewsFragment extends Fragment{
 
                             }
                         });
-
-//                        ArrayList<News> newsList = new ArrayList<>();
-//                        List<InvertedIndex> li = Select.from(InvertedIndex.class)
-//                                .where(Condition.prop("myword").eq(queryText)).list();
-//                        Log.d("this",String.valueOf(li.size()));
-//
-//                        HashSet<String> set = new HashSet<>();
-//                        for(InvertedIndex in :li){
-//                            String s = in.getIndex();
-//                            set.add(s);
-//                        }
-//                        int i = 0;
-//                        for (String str : set) {
-//                            try{
-//                                if(i++ > 15) break;
-//                                OkHttpClient client= new OkHttpClient();
-//                                Request.Builder reqBuild = new Request.Builder();
-//                                HttpUrl.Builder urlBuilder =HttpUrl.parse("https://covid-dashboard-api.aminer.cn/event/"+str)
-//                                        .newBuilder();
-//                                reqBuild.url(urlBuilder.build());
-//                                Request request = reqBuild.build();
-//                                Response response = client.newCall(request).execute();
-//                                String responseData = response.body().string();
-//                                JSONObject outerJSON = new JSONObject(responseData);
-//                                JSONObject innerJSON = (JSONObject)outerJSON.get("data");
-//                                String id = innerJSON.getString("_id");
-//                                String title = innerJSON.getString("title");
-//                                String time = innerJSON.getString("time");
-//                                String content = innerJSON.getString("content");
-//                                String source = innerJSON.getString("source");
-//                                News news = new News(id, title, content, time, source);
-//                                newsList.add(news);
-//
-//
-//                                if(i==5){
-//                                    mNewsList = newsList;
-//                                    adapter = new NewsAdapter(mNewsList);
-//                                    new Handler(Looper.getMainLooper()).post(new Runnable(){
-//                                        @Override
-//                                        public void run() {
-//                                            final RecyclerView recyclerView = (RecyclerView) swipeRefreshLayout.findViewById(R.id.news_title_view);
-//                                            recyclerView.setAdapter(adapter);
-//                                            adapter.setCanLoadMore(false);
-//                                            swipeRefreshLayout.setRefreshing(false);
-//                                        }
-//                                    });
-//
-//                                    adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
-//                                        @Override
-//                                        public void onClick(final int position) {
-//                                            News news = mNewsList.get(position);
-//                                            NewsContentActivity.actionStart(getActivity(), news.getTitle(), news.getTime(), news.getSource(), news.getContent());
-//                                        }
-//                                    });
-//                                }
-//                            } catch (JSONException e) {
-//                                e.printStackTrace();
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-//
-//                        }
-//
-//
-//                        mNewsList = newsList;
-//                        new Handler(Looper.getMainLooper()).post(new Runnable(){
-//                            @Override
-//                            public void run() {
-//                                adapter.setData(mNewsList);
-//                                adapter.setCanLoadMore(false);
-//                            }
-//                        });
                     }
                 }).start();
 
@@ -511,14 +433,10 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     private Context mContext;
     private RecyclerOnScrollerListener mOnScrollListener;
 
-    //    private RecyclerView.AdapterDataObserver mAdapterDataObserver;
-
     private static final int VIEW_TYPE_CONTENT = 0;
     private static final int VIEW_TYPE_FOOTER = 1;
     private boolean isCanLoadMore = true;
     private Animation rotateAnimation;
-
-    private static final int PER_PAGE = 10;
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -660,12 +578,6 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
             }
         };
         recyclerView.addOnScrollListener(mOnScrollListener);
-        //初始化的时候如果未填满一页，那么肯定就没有更多数据了
-//        if (mNewsList.size() < PER_PAGE) {
-//            setCanLoadMore(false);
-//        } else {
-//            setCanLoadMore(true);
-//        }
     }
 
 
@@ -690,9 +602,6 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     }
 
 
-    /*
-     * 数据加载完毕时执行setCanLoadMore()，此时isLoading都置为false
-     * */
     public void setCanLoadMore(boolean isCanLoadMore) {
         this.isCanLoadMore = isCanLoadMore;
         mOnScrollListener.setCanLoadMore(isCanLoadMore);
