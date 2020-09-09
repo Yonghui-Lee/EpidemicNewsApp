@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Html;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -56,6 +57,7 @@ public class ScholarDetailActivity extends AppCompatActivity {
         final boolean ispassedaway = getIntent().getBooleanExtra("ispassedaway",false);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle(scholarName);
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         final ImageView scholarImageView = findViewById(R.id.scholar_detail_image);
         TextView scholarNameText = findViewById(R.id.scholar_detail_name);
@@ -124,4 +126,14 @@ public class ScholarDetailActivity extends AppCompatActivity {
         canvas.drawBitmap(bitmap,0,0,paint);
         return greyBitmap;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return false;
+    }
+
 }

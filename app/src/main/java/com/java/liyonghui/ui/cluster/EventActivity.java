@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.Window;
 
 import androidx.appcompat.app.ActionBar;
@@ -34,6 +35,7 @@ public class EventActivity extends AppCompatActivity {
         Log.e("this",cluster);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle(cluster);
+        actionBar.setDisplayHomeAsUpEnabled(true);
         eventList = new ArrayList<>();
         ArrayList<String> arr = getIntent().getStringArrayListExtra("events");// 获取传入的新闻标题
         for(String s:arr){
@@ -47,6 +49,14 @@ public class EventActivity extends AppCompatActivity {
         EventAdapter adapter = new EventAdapter(eventList);
         recyclerView.setAdapter(adapter);
 
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return false;
     }
 
 

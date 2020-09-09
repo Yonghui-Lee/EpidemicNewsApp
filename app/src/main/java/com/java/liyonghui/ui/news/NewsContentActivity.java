@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.java.liyonghui.R;
@@ -49,7 +50,8 @@ public class NewsContentActivity extends AppCompatActivity implements WbShareCal
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.news_content);
-
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
         String newsTitle = getIntent().getStringExtra("news_title"); // 获取传入的新闻标题
         String newsTime = "时间：" + getIntent().getStringExtra("news_time"); // 获取传入的新闻标题
         String newsSource = getIntent().getStringExtra("news_source"); // 获取传入的新闻内容
@@ -83,6 +85,9 @@ public class NewsContentActivity extends AppCompatActivity implements WbShareCal
                 return true;
             case R.id.weixin:
                 Toast.makeText(this, "Weixin", Toast.LENGTH_SHORT).show();
+                return true;
+            case android.R.id.home:
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -127,4 +132,5 @@ public class NewsContentActivity extends AppCompatActivity implements WbShareCal
     public void onCancel() {
         Toast.makeText(NewsContentActivity.this, "分享取消", Toast.LENGTH_SHORT).show();
     }
+
 }

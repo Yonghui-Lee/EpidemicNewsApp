@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject outerJSON = new JSONObject(responseData);
                     JSONArray jsonArray = outerJSON.getJSONArray("datas");
                     for(int i=0; i<jsonArray.length(); i++){
-                        if(i>4000) break;
+                        if(i>5000) break;
                         JSONObject innerJSON = jsonArray.getJSONObject(i);
                         String id = innerJSON.getString("_id");
                         String time = innerJSON.getString("time");
