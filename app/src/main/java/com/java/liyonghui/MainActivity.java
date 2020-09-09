@@ -1,12 +1,10 @@
 package com.java.liyonghui;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.java.liyonghui.ui.data.EpidemicData;
 import com.orm.SugarContext;
-import com.orm.query.Condition;
 import com.sina.weibo.sdk.auth.AuthInfo;
 import com.sina.weibo.sdk.openapi.IWBAPI;
 import com.sina.weibo.sdk.openapi.WBAPIFactory;
@@ -92,9 +90,7 @@ public class MainActivity extends AppCompatActivity {
                         //Log.d("this",id+" "+ time+" "+ title);
                         news.save();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
+                } catch (JSONException | IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -141,9 +137,7 @@ public class MainActivity extends AppCompatActivity {
                             epidemicData.save();
                         }
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
+                } catch (JSONException | IOException e) {
                     e.printStackTrace();
                 }
             }

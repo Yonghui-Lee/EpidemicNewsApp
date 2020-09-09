@@ -42,6 +42,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
+import static com.java.liyonghui.ui.scholar.ScholarDetailActivity.greyBitmap;
+
 public class ScholarFragment extends Fragment {
 
     private ScholarViewModel scholarViewModel;
@@ -113,13 +115,6 @@ public class ScholarFragment extends Fragment {
                     for(int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         String avatar = jsonObject.getString("avatar");
-                        Bitmap image = null;
-                        if(!avatar.equals("null")){
-                            Request imgRequest = new Request.Builder().url(avatar).build();
-                            ResponseBody body = client.newCall(imgRequest).execute().body();
-                            InputStream in = body.byteStream();
-                            image = BitmapFactory.decodeStream(in);
-                        }
                         String name = jsonObject.getString("name");
                         String name_zh = jsonObject.getString("name_zh");
                         boolean is_passedaway = jsonObject.getBoolean("is_passedaway");
@@ -131,6 +126,15 @@ public class ScholarFragment extends Fragment {
                         double hindex = scholar_json.getDouble("hindex");
                         double pubs = scholar_json.getDouble("pubs");
                         double sociability = scholar_json.getDouble("sociability");
+                        Bitmap image = null;
+                        if(!avatar.equals("null")){
+                            Request imgRequest = new Request.Builder().url(avatar).build();
+                            ResponseBody body = client.newCall(imgRequest).execute().body();
+                            InputStream in = body.byteStream();
+                            image = BitmapFactory.decodeStream(in);
+                            if(is_passedaway)
+                                image = greyBitmap(image);
+                        }
                         JSONObject profile_json = jsonObject.getJSONObject("profile");
                         String address="",affiliation="",affiliation_zh="",bio="",edu="",email="",homepage="",note="",
                                 position="",work="";
@@ -173,7 +177,7 @@ public class ScholarFragment extends Fragment {
                                         scholar = passedAwayScholarList.get(position);
 
                                     ScholarDetailActivity.actionStart(getActivity(), scholar);
-                                    Toast.makeText(getActivity(), scholar.getName(), Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(getActivity(), scholar.getName(), Toast.LENGTH_SHORT).show();
                                 }
                             });
                             new Handler(Looper.getMainLooper()).post(new Runnable(){
@@ -188,7 +192,7 @@ public class ScholarFragment extends Fragment {
                             new Handler(Looper.getMainLooper()).post(new Runnable(){
                                 @Override
                                 public void run() {
-                                    mAdapter.setData(highlightScholarList);
+                                    mAdapter.setData(scholarType.equals("高关注学者")? highlightScholarList:passedAwayScholarList);
                                 }
                             });
                         }
@@ -201,7 +205,7 @@ public class ScholarFragment extends Fragment {
                 new Handler(Looper.getMainLooper()).post(new Runnable(){
                     @Override
                     public void run() {
-                        mAdapter.setData(highlightScholarList);
+                        mAdapter.setData(scholarType.equals("高关注学者")? highlightScholarList:passedAwayScholarList);
                     }
                 });
 
