@@ -3,6 +3,7 @@ package com.java.liyonghui.ui.news;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,6 +38,7 @@ public class NewsContentActivity extends AppCompatActivity implements WbShareCal
                     + "follow_app_official_microblog," + "invitation_write";
     private IWBAPI mWBAPI;
     private String mNewsTitle;
+    private String mNewsContent;
     public static void actionStart(Context context, String newsTitle, String newsTime, String newsSource, String newsContent) {
         Intent intent = new Intent(context, NewsContentActivity.class);
         intent.putExtra("news_title", newsTitle);
@@ -55,7 +57,7 @@ public class NewsContentActivity extends AppCompatActivity implements WbShareCal
         String newsTitle = getIntent().getStringExtra("news_title"); // 获取传入的新闻标题
         String newsTime = "时间：" + getIntent().getStringExtra("news_time"); // 获取传入的新闻标题
         String newsSource = getIntent().getStringExtra("news_source"); // 获取传入的新闻内容
-        String newsContent = getIntent().getStringExtra("news_content"); // 获取传入的新闻内容
+        mNewsContent = getIntent().getStringExtra("news_content"); // 获取传入的新闻内容
         if(newsSource.equals(""))
             newsSource = "来源：未知";
         else newsSource = "来源："+ newsSource;
@@ -68,7 +70,7 @@ public class NewsContentActivity extends AppCompatActivity implements WbShareCal
         newsTitleText.setText(newsTitle); // 刷新新闻的标题
         newsTimeText.setText(newsTime);
         newsSourceText.setText(newsSource);
-        newsContentText.setText(newsContent); // 刷新新闻的内容
+        newsContentText.setText(mNewsContent); // 刷新新闻的内容
 
         AuthInfo authInfo = new AuthInfo(this, APP_KY, REDIRECT_URL, SCOPE);
         mWBAPI = WBAPIFactory.createWBAPI(this);
@@ -110,9 +112,21 @@ public class NewsContentActivity extends AppCompatActivity implements WbShareCal
 
     private void doWeiboShare() {
         WeiboMultiMessage message = new WeiboMultiMessage();
-
+        Log.e("this",mNewsContent);
+        String[] sArr1 = mNewsContent.split(".");
+        String[] sArr2 = mNewsContent.split("。");
         TextObject textObject = new TextObject();
-        textObject.text = mNewsTitle;
+        if(sArr1.length>0){
+            textObject.text = mNewsTitle + "." + sArr1[0];
+        }else if(sArr2.length>0){
+            textObject.text = mNewsTitle + "。" + sArr2[0];
+        }else{
+            textObject.text = mNewsTitle;
+        }
+
+
+
+
         message.textObject = textObject;
 
         mWBAPI.shareMessage(message, true);

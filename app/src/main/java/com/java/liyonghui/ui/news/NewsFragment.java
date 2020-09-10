@@ -184,6 +184,8 @@ public class NewsFragment extends Fragment{
                     mTabLayout.addTab(mTabLayout.newTab().setText("paper"));
                 mTabLayout.addTab(mTabLayout.newTab().setText(""));
                 LinearLayout tabStrip = (LinearLayout) mTabLayout.getChildAt(0);
+                for(int i=1;i<mTabLayout.getTabCount()-1;i++)
+                    tabStrip.getChildAt(i).setClickable(true);
                 View tabView = tabStrip.getChildAt(mTabLayout.getTabCount() - 1);
                 if (tabView != null) {
                     tabView.setClickable(false);
@@ -616,8 +618,11 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
     public void setCanLoadMore(boolean isCanLoadMore) {
         this.isCanLoadMore = isCanLoadMore;
-        mOnScrollListener.setCanLoadMore(isCanLoadMore);
-        mOnScrollListener.setLoading(false);
+        if(mOnScrollListener!=null){
+            mOnScrollListener.setCanLoadMore(isCanLoadMore);
+            mOnScrollListener.setLoading(false);
+        }
+
     }
 
 
