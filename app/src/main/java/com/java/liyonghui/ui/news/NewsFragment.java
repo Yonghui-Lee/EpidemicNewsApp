@@ -55,7 +55,11 @@ public class NewsFragment extends Fragment{
     private List<News> mNewsList;
     private int mCurrentPage = 1;
     private static final int PER_PAGE = 20;
-    private NewsAdapter adapter;
+    private NewsAdapter newsAdapter;
+    private NewsAdapter paperAdapter;
+    private NewsAdapter historyAdapter;
+    private NewsAdapter searchAdapter;
+    private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private String myNewsType;
     private TabLayout mTabLayout;
@@ -85,7 +89,7 @@ public class NewsFragment extends Fragment{
                 }
             }
         });
-        final RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.news_title_view);
+        recyclerView = (RecyclerView) root.findViewById(R.id.news_title_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         mNewsList = new ArrayList<>();
@@ -111,14 +115,25 @@ public class NewsFragment extends Fragment{
                 if (tab.getText().equals("news")) {
                     mCurrentPage = 1;
                     myNewsType = "news";
-                    mNewsList = new ArrayList<>();
-                    getNews();
+                    if(newsAdapter==null){
+                        mNewsList = new ArrayList<>();
+                        getNews();
+                    }else{
+                        mNewsList = newsAdapter.getNewsList();
+                        recyclerView.setAdapter(newsAdapter);
+                    }
+
                 }
                 if (tab.getText().equals("paper")) {
                     mCurrentPage = 1;
                     myNewsType = "paper";
-                    mNewsList = new ArrayList<>();
-                    getNews();
+                    if(paperAdapter==null){
+                        mNewsList = new ArrayList<>();
+                        getNews();
+                    }else{
+                        mNewsList = paperAdapter.getNewsList();
+                        recyclerView.setAdapter(paperAdapter);
+                    }
                 }
             }
 
@@ -188,18 +203,17 @@ public class NewsFragment extends Fragment{
             Objects.requireNonNull(mTabLayout.getTabAt(mTabLayout.getTabCount() - 1)).select();
             mNewsList = Select.from(News.class)
                     .where(Condition.prop("content").notEq("")).list();
-            adapter = new NewsAdapter(mNewsList);
+            historyAdapter = new NewsAdapter(mNewsList);
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    final RecyclerView recyclerView = (RecyclerView) swipeRefreshLayout.findViewById(R.id.news_title_view);
-                    recyclerView.setAdapter(adapter);
-                    adapter.setCanLoadMore(false);
+                    recyclerView.setAdapter(historyAdapter);
+                    historyAdapter.setCanLoadMore(false);
                     swipeRefreshLayout.setRefreshing(false);
                 }
             });
 
-            adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
+            historyAdapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
                 @Override
                 public void onClick(final int position) {
                     News news = mNewsList.get(position);
@@ -216,12 +230,15 @@ public class NewsFragment extends Fragment{
         new Thread(new Runnable() {
             @Override
             public void run() {
-                adapter = new NewsAdapter(initLoad());
+                NewsAdapter adapter = new NewsAdapter(initLoad());
+                if(myNewsType.equals("news"))
+                    newsAdapter = adapter;
+                else paperAdapter = adapter;
+                final NewsAdapter finalAdapter = adapter;
                 new Handler(Looper.getMainLooper()).post(new Runnable(){
                     @Override
                     public void run() {
-                        final RecyclerView recyclerView = (RecyclerView) swipeRefreshLayout.findViewById(R.id.news_title_view);
-                        recyclerView.setAdapter(adapter);
+                        recyclerView.setAdapter(finalAdapter);
                         swipeRefreshLayout.setRefreshing(false);
                     }
                 });
@@ -239,7 +256,7 @@ public class NewsFragment extends Fragment{
                                     new Handler(Looper.getMainLooper()).post(new Runnable(){
                                         @Override
                                         public void run() {
-                                            adapter.setGrey(position);
+                                            finalAdapter.setGrey(position);
                                         }
                                     });
                                 }
@@ -256,7 +273,6 @@ public class NewsFragment extends Fragment{
                     @Override
                     public void onLoadMore(int currentPage) {
                         mCurrentPage = currentPage;
-                        Log.e("this","current page:"+ mCurrentPage);
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
@@ -264,8 +280,8 @@ public class NewsFragment extends Fragment{
                                 new Handler(Looper.getMainLooper()).post(new Runnable(){
                                     @Override
                                     public void run() {
-                                        adapter.setCanLoadMore(true);
-                                        adapter.setData(mNewsList);
+                                        finalAdapter.setCanLoadMore(true);
+                                        finalAdapter.setData(mNewsList);
                                     }
                                 });
                             }
@@ -303,7 +319,6 @@ public class NewsFragment extends Fragment{
                 List<News> oldNews = News.find(News.class,"news_id = ?",id);
                 if(oldNews.size()!=0 && oldNews.get(0).getIsRead()){
                     newsList.add(oldNews.get(0));
-                    Log.e("this","oldNews");
                 }
                 else{
                     News news = new News(id, title, content, time, source);
@@ -339,18 +354,17 @@ public class NewsFragment extends Fragment{
                     public void run() {
                         mNewsList = Select.from(News.class)
                                 .where(Condition.prop("title").like("%" + queryText +"%")).list();
-                        adapter = new NewsAdapter(mNewsList);
+                        searchAdapter = new NewsAdapter(mNewsList);
                         new Handler(Looper.getMainLooper()).post(new Runnable(){
                             @Override
                             public void run() {
-                                final RecyclerView recyclerView = (RecyclerView) swipeRefreshLayout.findViewById(R.id.news_title_view);
-                                recyclerView.setAdapter(adapter);
-                                adapter.setCanLoadMore(false);
+                                recyclerView.setAdapter(searchAdapter);
+                                searchAdapter.setCanLoadMore(false);
                                 swipeRefreshLayout.setRefreshing(false);
                             }
                         });
 
-                        adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
+                        searchAdapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
                             @Override
                             public void onClick(final int position) {
                                 final News news = mNewsList.get(position);
@@ -383,7 +397,7 @@ public class NewsFragment extends Fragment{
                                             new Handler(Looper.getMainLooper()).post(new Runnable(){
                                                 @Override
                                                 public void run() {
-                                                    adapter.setGrey(position);
+                                                    searchAdapter.setGrey(position);
                                                 }
                                             });
                                             NewsContentActivity.actionStart(getActivity(), fullNews.getTitle(), fullNews.getTime(), fullNews.getSource(), fullNews.getContent());
@@ -517,6 +531,8 @@ class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     public int getItemCount() {
         return mNewsList.size() + 1;
     }
+
+    public List<News> getNewsList(){return mNewsList;}
 
     @Override
     public int getItemViewType(int position) {

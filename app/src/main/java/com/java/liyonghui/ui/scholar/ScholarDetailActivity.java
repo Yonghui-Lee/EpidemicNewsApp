@@ -97,19 +97,6 @@ public class ScholarDetailActivity extends AppCompatActivity {
                 }
         }).start();
     }
-    public static Bitmap greyBitmap(Bitmap bitmap){
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        Bitmap greyBitmap = Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(greyBitmap);
-        Paint paint = new Paint();
-        ColorMatrix colorMatrix = new ColorMatrix();
-        colorMatrix.setSaturation(0.1f);
-        ColorMatrixColorFilter colorMatrixFilter = new ColorMatrixColorFilter(colorMatrix);
-        paint.setColorFilter(colorMatrixFilter);
-        canvas.drawBitmap(bitmap,0,0,paint);
-        return greyBitmap;
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
