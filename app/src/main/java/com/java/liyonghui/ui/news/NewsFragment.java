@@ -233,19 +233,6 @@ public class NewsFragment extends Fragment{
                             @Override
                             public void run() {
                                 News news = mNewsList.get(position);
-//                                    OkHttpClient client= new OkHttpClient();
-//                                    Request.Builder reqBuild = new Request.Builder();
-//                                    HttpUrl.Builder urlBuilder =HttpUrl.parse("https://covid-dashboard-api.aminer.cn/event/"+news.getNewsID())
-//                                            .newBuilder();
-//                                    reqBuild.url(urlBuilder.build());
-//                                    Request request = reqBuild.build();
-//                                    Response response = client.newCall(request).execute();
-//                                    String responseData = response.body().string();
-//                                    JSONObject outerJSON = new JSONObject(responseData);
-//                                    JSONObject innerJSON = (JSONObject)outerJSON.get("data");
-//                                    String content = innerJSON.getString("content");
-//                                    Log.d("text",request.toString());
-//                                    Log.d("text",responseData);
                                 if(!news.getIsRead()){
                                     news.setIsRead(true);
                                     news.save();
@@ -387,9 +374,18 @@ public class NewsFragment extends Fragment{
                                             String title = innerJSON.getString("title");
                                             String time = innerJSON.getString("time");
                                             String content = innerJSON.getString("content");
-                                            String source = innerJSON.getString("source");
+                                            String source = "";
+                                            if(innerJSON.has("source"))
+                                                source = innerJSON.getString("source");
                                             News fullNews = new News(id, title, content, time, source);
+                                            fullNews.setIsRead(true);
                                             fullNews.save();
+                                            new Handler(Looper.getMainLooper()).post(new Runnable(){
+                                                @Override
+                                                public void run() {
+                                                    adapter.setGrey(position);
+                                                }
+                                            });
                                             NewsContentActivity.actionStart(getActivity(), fullNews.getTitle(), fullNews.getTime(), fullNews.getSource(), fullNews.getContent());
                                         } catch (JSONException | IOException e) {
                                             e.printStackTrace();

@@ -2,6 +2,7 @@ package com.java.liyonghui.ui.scholar;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -31,7 +32,6 @@ import okhttp3.ResponseBody;
 public class ScholarDetailActivity extends AppCompatActivity {
     public static void actionStart(Context context, Scholar scholar) {
         Intent intent = new Intent(context, ScholarDetailActivity.class);
-        intent.putExtra("imageUrl",scholar.getImageUrl());
         intent.putExtra("name", scholar.getName());
         intent.putExtra("position", scholar.getPosition());
         intent.putExtra("affiliation", scholar.getAffiliation());
@@ -47,14 +47,12 @@ public class ScholarDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scholar_detail);
 
-        final String imageUrl = getIntent().getStringExtra("imageUrl");
-        String scholarName = getIntent().getStringExtra("name");
+        final String scholarName = getIntent().getStringExtra("name");
         String scholarPosition = getIntent().getStringExtra("position");
         String scholarAffiliation = getIntent().getStringExtra("affiliation");
         String scholarWork = getIntent().getStringExtra("work");
         String scholarEdu = getIntent().getStringExtra("edu");
         String scholarBio = getIntent().getStringExtra("bio");
-        final boolean ispassedaway = getIntent().getBooleanExtra("ispassedaway",false);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle(scholarName);
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -79,7 +77,6 @@ public class ScholarDetailActivity extends AppCompatActivity {
         if(scholarBio.equals(""))
             scholarBio = "Unknown";
 
-        scholarImageView.setImageResource(R.drawable.lack_photo);
         scholarNameText.setText(Html.fromHtml(("<font color = \"#000000\"><b>Name:</b></font>" + scholarName),Html.FROM_HTML_MODE_LEGACY));
         scholarPositionText.setText(Html.fromHtml(("<font color = \"#000000\"><b>Position:</b></font>" + scholarPosition),Html.FROM_HTML_MODE_LEGACY));
         scholarAffiliationText.setText(Html.fromHtml(("<font color = \"#000000\"><b>Affiliation:</b></font>" + scholarAffiliation),Html.FROM_HTML_MODE_LEGACY));
@@ -90,27 +87,14 @@ public class ScholarDetailActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    OkHttpClient client = new OkHttpClient();
-                    Bitmap image = null;
-                    if (!imageUrl.equals("null")) {
-                        Request imgRequest = new Request.Builder().url(imageUrl).build();
-                        ResponseBody body = client.newCall(imgRequest).execute().body();
-                        InputStream in = body.byteStream();
-                        image = BitmapFactory.decodeStream(in);
-                    }
-                    final Bitmap finalImage = ispassedaway?greyBitmap(image):image;
+                final Bitmap finalImage = getImageFromAssetsFile(scholarName);
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
                             scholarImageView.setImageBitmap(finalImage);
                         }
                     });
-
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
-            }
         }).start();
     }
     public static Bitmap greyBitmap(Bitmap bitmap){
@@ -134,6 +118,25 @@ public class ScholarDetailActivity extends AppCompatActivity {
             return true;
         }
         return false;
+    }
+
+    private Bitmap getImageFromAssetsFile(String fileName)
+    {
+        Bitmap image = null;
+        AssetManager am = getResources().getAssets();
+        try
+        {
+            InputStream is = am.open("scholar_image/"+fileName+".png");
+            image = BitmapFactory.decodeStream(is);
+            is.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return image;
+
     }
 
 }

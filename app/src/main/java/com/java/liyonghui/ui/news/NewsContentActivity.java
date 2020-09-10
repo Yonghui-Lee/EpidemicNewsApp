@@ -83,9 +83,9 @@ public class NewsContentActivity extends AppCompatActivity implements WbShareCal
             case R.id.weibo:
                 doWeiboShare();
                 return true;
-            case R.id.weixin:
-                Toast.makeText(this, "Weixin", Toast.LENGTH_SHORT).show();
-                return true;
+//            case R.id.weixin:
+//                Toast.makeText(this, "Weixin", Toast.LENGTH_SHORT).show();
+//                return true;
             case android.R.id.home:
                 finish();
                 return true;

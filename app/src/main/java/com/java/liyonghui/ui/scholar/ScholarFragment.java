@@ -1,5 +1,6 @@
 package com.java.liyonghui.ui.scholar;
 
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -114,15 +115,15 @@ public class ScholarFragment extends Fragment {
                         double hindex = scholar_json.getDouble("hindex");
                         double pubs = scholar_json.getDouble("pubs");
                         double sociability = scholar_json.getDouble("sociability");
-                        Bitmap image = null;
-                        if(!avatar.equals("null")){
-                            Request imgRequest = new Request.Builder().url(avatar).build();
-                            ResponseBody body = client.newCall(imgRequest).execute().body();
-                            InputStream in = body.byteStream();
-                            image = BitmapFactory.decodeStream(in);
-                            if(is_passedaway)
-                                image = greyBitmap(image);
-                        }
+                        Bitmap image = getImageFromAssetsFile(name);
+//                        if(!avatar.equals("null")){
+//                            Request imgRequest = new Request.Builder().url(avatar).build();
+//                            ResponseBody body = client.newCall(imgRequest).execute().body();
+//                            InputStream in = body.byteStream();
+//                            image = BitmapFactory.decodeStream(in);
+//                            if(is_passedaway)
+//                                image = greyBitmap(image);
+//                        }
                         JSONObject profile_json = jsonObject.getJSONObject("profile");
                         String address="",affiliation="",affiliation_zh="",bio="",edu="",email="",homepage="",note="",
                                 position="",work="";
@@ -203,5 +204,25 @@ public class ScholarFragment extends Fragment {
 
         return root;
     }
+
+    private Bitmap getImageFromAssetsFile(String fileName)
+    {
+        Bitmap image = null;
+        AssetManager am = getResources().getAssets();
+        try
+        {
+            InputStream is = am.open("scholar_image/"+fileName+".png");
+            image = BitmapFactory.decodeStream(is);
+            is.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return image;
+
+    }
+
 
 }

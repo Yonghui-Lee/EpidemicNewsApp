@@ -8,10 +8,10 @@
         android:icon="@drawable/weibo"
         app:showAsAction="always"
         android:title="@string/weibo_share" />
-    <item
-        android:id="@+id/weixin"
-        android:icon="@drawable/weixin"
-        android:title="@string/weixin_share"
-        app:showAsAction="always" />
+<!--    <item-->
+<!--        android:id="@+id/weixin"-->
+<!--        android:icon="@drawable/weixin"-->
+<!--        android:title="@string/weixin_share"-->
+<!--        app:showAsAction="always" />-->
 
 </menu>

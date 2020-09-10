@@ -18,11 +18,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.java.liyonghui.R;
 import java.util.ArrayList;
 
 
-public class ChannelActivity extends Activity implements AdapterView.OnItemClickListener {
+public class ChannelActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private GridView userGridView;
     ChannelAdapter userAdapter;
@@ -39,6 +42,9 @@ public class ChannelActivity extends Activity implements AdapterView.OnItemClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.channel);
         initView();
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("频道管理");
+        actionBar.setDisplayHomeAsUpEnabled(true);
         Intent intent = getIntent();
         initData(intent.getBooleanExtra("news",true),intent.getBooleanExtra("paper",true));
     }
@@ -235,6 +241,18 @@ public class ChannelActivity extends Activity implements AdapterView.OnItemClick
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
+            Intent intent= new Intent();
+            boolean newsSelected = true;
+            boolean paperSelected = true;
+            for(Channel channel : otherAdapter.getChannelList()){
+                if(channel.getName().equals("NEWS"))
+                    newsSelected = false;
+                if(channel.getName().equals("PAPER"))
+                    paperSelected = false;
+            }
+            intent.putExtra("news",newsSelected);
+            intent.putExtra("paper",paperSelected);
+            setResult(RESULT_OK,intent);
             finish();
             return true;
         }
