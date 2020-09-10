@@ -153,40 +153,65 @@ public class ScholarFragment extends Fragment {
                             passedAwayScholarList.add(scholar);
                         else
                             highlightScholarList.add(scholar);
+
+                        if(i==3){
+                            highlightScholarAdapter = new ScholarAdapter(getActivity(), highlightScholarList);
+                            passedAwayScholarAdapter = new ScholarAdapter(getActivity(), passedAwayScholarList);
+                            highlightScholarAdapter.setOnItemClickListener(new ScholarAdapter.OnItemClickListener() {
+                                @Override
+                                public void onClick(final int position) {
+                                    Scholar scholar;
+                                    scholar = highlightScholarList.get(position);
+                                    ScholarDetailActivity.actionStart(getActivity(), scholar);
+                                }
+                            });
+                            passedAwayScholarAdapter.setOnItemClickListener(new ScholarAdapter.OnItemClickListener() {
+                                @Override
+                                public void onClick(final int position) {
+                                    Scholar scholar;
+                                    scholar = passedAwayScholarList.get(position);
+                                    ScholarDetailActivity.actionStart(getActivity(), scholar);
+                                }
+                            });
+                            new Handler(Looper.getMainLooper()).post(new Runnable(){
+                                @Override
+                                public void run() {
+                                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                                    if(scholarType.equals("高关注学者"))
+                                        recyclerView.setAdapter(highlightScholarAdapter);
+                                    else
+                                        recyclerView.setAdapter(passedAwayScholarAdapter);
+                                }
+                            });
+                        }
+                        if(i%16==15){
+                            new Handler(Looper.getMainLooper()).post(new Runnable(){
+                                @Override
+                                public void run() {
+                                    if(scholarType.equals("高关注学者"))
+                                        recyclerView.setAdapter(highlightScholarAdapter);
+                                    else
+                                        recyclerView.setAdapter(passedAwayScholarAdapter);
+                                }
+                            });
+                        }
+
                     }
 
                     Log.e("this",String.valueOf(highlightScholarList.size()));
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
                 }
-                highlightScholarAdapter = new ScholarAdapter(getActivity(), highlightScholarList);
-                passedAwayScholarAdapter = new ScholarAdapter(getActivity(), passedAwayScholarList);
-                highlightScholarAdapter.setOnItemClickListener(new ScholarAdapter.OnItemClickListener() {
-                    @Override
-                    public void onClick(final int position) {
-                        Scholar scholar;
-                        scholar = highlightScholarList.get(position);
-                        ScholarDetailActivity.actionStart(getActivity(), scholar);
-                    }
-                });
-                passedAwayScholarAdapter.setOnItemClickListener(new ScholarAdapter.OnItemClickListener() {
-                    @Override
-                    public void onClick(final int position) {
-                        Scholar scholar;
-                        scholar = passedAwayScholarList.get(position);
-                        ScholarDetailActivity.actionStart(getActivity(), scholar);
-                    }
-                });
                 new Handler(Looper.getMainLooper()).post(new Runnable(){
                     @Override
                     public void run() {
-                        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                         if(scholarType.equals("高关注学者"))
                             recyclerView.setAdapter(highlightScholarAdapter);
                         else
                             recyclerView.setAdapter(passedAwayScholarAdapter);
                     }
                 });
+
 
             }
         }).start();
